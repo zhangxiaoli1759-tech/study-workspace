@@ -1,0 +1,1324 @@
+<!-- 本工作台通过 WorkBuddy 资料库能力（library skill）搭建、存储和部署 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>学习小站 · 四科学习台</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1f2933; --sub:#6b7785;
+    --line:#e3e8ef; --brand:#4f6ef7; --brand-soft:#eef1ff;
+    --math:#3b82f6; --chinese:#ef5da8; --english:#10b981; --science:#f59e0b;
+    --red:#e5484d; --red-soft:#fdecec; --green:#2fa66b; --green-soft:#e8f6ee;
+    --amber:#d97706; --radius:16px; --shadow:0 2px 10px rgba(31,41,51,.06);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink); font-size:15px; line-height:1.5;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:14px 14px 40px;}
+  header{
+    display:flex; flex-direction:column; gap:10px;
+    padding:14px 16px; background:var(--card); border-radius:var(--radius);
+    box-shadow:var(--shadow); margin-bottom:14px;
+  }
+  .header-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .header-bottom{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding-top:8px; border-top:1px dashed var(--line);}
+  .logo{width:38px; height:38px; flex:0 0 auto;}
+  .title{flex:1; min-width:150px;}
+  .title h1{font-size:18px; margin:0; font-weight:700;}
+  .title p{margin:2px 0 0; font-size:12px; color:var(--sub);}
+  .sync{display:inline-flex; align-items:center; gap:5px; font-size:12px; color:var(--sub);
+    background:var(--bg); padding:5px 9px; border-radius:20px;}
+  .sync .dot{width:8px; height:8px; border-radius:50%; background:var(--green);}
+  .head-actions{display:flex; gap:6px; flex-wrap:wrap; margin-left:auto;}
+  .btn{
+    border:none; cursor:pointer; font-family:inherit; font-size:14px;
+    padding:9px 14px; border-radius:10px; min-height:44px; min-width:44px;
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    background:var(--brand); color:#fff; transition:.15s;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn.ghost{background:var(--bg); color:var(--ink); border:1px solid var(--line);}
+  .btn.soft{background:var(--brand-soft); color:var(--brand);}
+  .btn.danger{background:var(--red-soft); color:var(--red);}
+  .btn.sm{padding:7px 10px; font-size:13px; min-height:38px; border-radius:9px;}
+  .btn.block{width:100%;}
+
+  /* today panel */
+  .today{
+    background:linear-gradient(135deg,#fff,#fbfcff); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; box-shadow:var(--shadow);
+  }
+  .today h2{margin:0 0 10px; font-size:15px; display:flex; align-items:center; gap:7px;}
+  .today .empty{color:var(--sub); font-size:13px; padding:6px 0;}
+  .td-item{
+    display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:11px;
+    background:var(--bg); margin-bottom:7px;
+  }
+  .td-item.over{background:var(--red-soft);}
+  .td-badge{flex:0 0 auto; font-size:11px; padding:3px 8px; border-radius:20px; background:#fff; color:var(--sub); border:1px solid var(--line);}
+  .td-item.over .td-badge{background:var(--red); color:#fff; border-color:var(--red);}
+  .td-text{flex:1; font-size:13.5px;}
+  .td-text b{font-weight:600;}
+  .td-go{flex:0 0 auto; font-size:12px; color:var(--brand); background:var(--brand-soft); border:none; padding:6px 11px; border-radius:9px; min-height:36px; cursor:pointer;}
+
+  /* overview stats */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px;}
+  .stat{background:var(--card); border-radius:13px; padding:12px; text-align:center; box-shadow:var(--shadow);}
+  .stat .n{font-size:22px; font-weight:700;}
+  .stat .l{font-size:11px; color:var(--sub); margin-top:2px;}
+  .ov-chart{background:var(--card); border-radius:13px; padding:12px 14px; box-shadow:var(--shadow); margin-bottom:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .ov-chart .bars{flex:1; min-width:200px;}
+  .ov-chart .legend{font-size:11px; color:var(--sub);}
+  .ov-ring{flex:0 0 auto;}
+
+  /* tabs */
+  .tabs{display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px;}
+  .tab{
+    flex:1 0 auto; min-width:78px; border:none; cursor:pointer; font-family:inherit;
+    padding:11px 8px; border-radius:12px; background:var(--card); color:var(--sub);
+    font-size:14px; font-weight:600; border-bottom:3px solid transparent; min-height:46px;
+    display:flex; flex-direction:column; align-items:center; gap:3px; box-shadow:var(--shadow);
+  }
+  .tab .ic{width:20px; height:20px;}
+  .tab.active{color:var(--ink);}
+  .tab[data-k="math"].active{border-bottom-color:var(--math);}
+  .tab[data-k="chinese"].active{border-bottom-color:var(--chinese);}
+  .tab[data-k="english"].active{border-bottom-color:var(--english);}
+  .tab[data-k="science"].active{border-bottom-color:var(--science);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* 语文科内二级 Tab */
+  .sub-tabs{display:flex; gap:8px; margin:6px 0 12px; border-bottom:1px solid var(--line); padding-bottom:6px;}
+  .sub-tab{
+    padding:7px 14px; border-radius:9px; border:none; background:transparent; cursor:pointer;
+    font-family:inherit; font-size:13.5px; font-weight:600; color:var(--sub);
+    border-bottom:2.5px solid transparent; transition:color .15s, border-color .15s;
+  }
+  .sub-tab.active{color:var(--chinese); border-bottom-color:var(--chinese); background:#fff5fa;}
+  .sub-math .sub-tab.active{color:var(--math); border-bottom-color:var(--math); background:#eff6ff;}
+  .sub-english .sub-tab.active{color:var(--english); border-bottom-color:var(--english); background:#ecfdf5;}
+  .sub-science .sub-tab.active{color:var(--science); border-bottom-color:var(--science); background:#fff7ed;}
+  .sub-panel{display:none;}
+  .sub-panel.active{display:block;}
+  .card{
+    background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow);
+    margin-bottom:14px;
+  }
+  .card h3{margin:0 0 4px; font-size:15px; display:flex; align-items:center; gap:7px;}
+  .card .desc{margin:0 0 12px; font-size:12.5px; color:var(--sub);}
+  .card h3 .ic{width:20px; height:20px; flex:0 0 auto;}
+
+  label{display:block; font-size:12.5px; color:var(--sub); margin:10px 0 5px;}
+  input,select,textarea{
+    width:100%; font-family:inherit; font-size:16px; color:var(--ink);
+    border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fff;
+    min-height:44px;
+  }
+  textarea{resize:vertical; min-height:74px; line-height:1.5;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+
+  .list{margin-top:12px; display:flex; flex-direction:column; gap:10px;}
+  .item{border:1px solid var(--line); border-radius:13px; padding:12px 13px; background:#fff;}
+  .item .top{display:flex; align-items:flex-start; gap:8px; justify-content:space-between;}
+  .item .name{font-weight:600; font-size:14.5px;}
+  .item .meta{font-size:12px; color:var(--sub); margin-top:3px;}
+  .badge{font-size:11px; padding:3px 9px; border-radius:20px; white-space:nowrap;}
+  .b-wait{background:var(--amber); color:#fff;}
+  .b-done{background:var(--green-soft); color:var(--green);}
+  .b-over{background:var(--red); color:#fff;}
+  .item .acts{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
+  .item .acts .btn{padding:6px 10px; min-height:36px; font-size:12.5px;}
+  .subgrid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;}
+  .subgrid.full{grid-template-columns:1fr;}
+  .subfield label{margin:0 0 3px; font-size:11.5px;}
+  details{margin-top:10px;}
+  summary{cursor:pointer; font-size:13px; color:var(--brand); list-style:none; padding:6px 0;}
+  summary::-webkit-details-marker{display:none;}
+  .dim6{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;}
+
+  .thumbs{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+  .thumb{width:64px; height:64px; border-radius:10px; object-fit:cover; border:1px solid var(--line); cursor:pointer;}
+  .thumb-sm{width:40px; height:40px; border-radius:8px; object-fit:cover; border:1px solid var(--line); cursor:pointer; vertical-align:middle; transition:transform .2s; display:inline-block; line-height:0;}
+  .thumb-sm:hover{transform:scale(1.08);}
+  .essay-table-wrap{overflow-x:auto; margin-top:4px; border-radius:12px; border:1px solid var(--line); background:#fff;}
+  .essay-table{width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; font-size:13px; min-width:480px;}
+  .essay-table thead th{background:var(--bg); color:var(--sub); font-weight:600; font-size:11.5px; padding:9px 10px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap;}
+  .essay-table tbody td{padding:10px; border-bottom:1px solid var(--line); vertical-align:middle; height:60px; line-height:1.4; spellcheck:false;}
+  .essay-table tbody tr:last-child td{border-bottom:none;}
+  .essay-row{transition:background .15s; height:60px;}
+  .essay-row:hover{background:#f7faff;}
+  .essay-row .cell-time{color:var(--sub); font-family:ui-monospace,SF Mono,Consolas,monospace; font-size:12.5px; white-space:nowrap;}
+  .essay-row .cell-title{display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-width:120px;}
+  .essay-row .cell-score{text-align:center; white-space:nowrap;}
+  .essay-row .cell-link{text-align:center; white-space:nowrap;}
+  .essay-row .cell-img{text-align:center;}
+  .essay-title-link{cursor:pointer; font-weight:600; color:var(--ink); text-decoration:none;}
+  .essay-title-link:hover{color:var(--accent);}
+  .sm-badge{font-size:10.5px; padding:2px 7px; border-radius:12px;}
+  .score-chip{font-size:11px; padding:2px 7px; border-radius:10px; background:#fff7ed; color:#c2410c; font-weight:600;}
+  .tdoc-badge{display:inline-flex; align-items:center; gap:3px; padding:4px 9px; border-radius:8px; background:#eaf3ff; color:#3b82f6; font-size:12px; text-decoration:none; font-weight:500; white-space:nowrap;}
+  .tdoc-badge:hover{background:#dbeafe;}
+  .cell-dash{color:#9aa3af; font-size:14px; display:inline-block; line-height:1; user-select:none; -webkit-user-select:none;}
+  .essay-detail td{background:var(--bg); padding:14px 12px !important;}
+  .essay-detail-inner{max-width:920px; display:flex; flex-direction:column; gap:10px;}
+  .detail-label{font-size:12px; color:var(--sub); font-weight:600; margin-bottom:5px;}
+  .detail-content{font-size:13px; line-height:1.6; color:var(--ink); background:#fff; padding:9px 11px; border-radius:8px; border:1px solid var(--line); white-space:pre-wrap; max-height:160px; overflow-y:auto;}
+  .polish-area{min-height:90px; resize:vertical;}
+  .lb{position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:200; padding:20px; flex-direction:column;}
+  .lb.show{display:flex;}
+  .lb img{max-width:100%; max-height:80%; border-radius:10px;}
+  .lb .close{position:absolute; top:16px; right:20px; color:#fff; font-size:28px; cursor:pointer; line-height:1;}
+  .toast{
+    position:fixed; left:50%; bottom:30px; transform:translateX(-50%);
+    background:rgba(31,41,51,.92); color:#fff; padding:10px 18px; border-radius:22px;
+    font-size:13px; z-index:99; opacity:0; transition:.25s; pointer-events:none; max-width:88%;
+  }
+  .toast.show{opacity:1;}
+
+  /* mobile */
+  @media(max-width:640px){
+    .row3{grid-template-columns:1fr 1fr;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .subgrid{grid-template-columns:1fr;}
+    .dim6{grid-template-columns:1fr;}
+    .title h1{font-size:16px;}
+    header{padding:12px;}
+    .essay-table{min-width:380px;}
+    .essay-table thead th{padding:7px 6px; font-size:10.5px;}
+    .essay-table tbody td{padding:8px 6px;}
+  }
+  .tip{font-size:12px; color:var(--sub); background:var(--bg); border-radius:10px; padding:9px 11px; margin-top:10px;}
+
+  /* 全局年级/学期设置 */
+  .global-settings{display:flex; align-items:center; gap:14px; margin-left:auto;}
+  .global-settings .gs-item{display:inline-flex; align-items:center; gap:6px;}
+  .global-settings .gs-label{font-size:12px; color:var(--sub); font-weight:600; white-space:nowrap;}
+  .global-settings select{
+    font-family:inherit; font-size:12.5px; padding:4px 8px; min-width:90px;
+    border-radius:8px; border:1px solid var(--line); background:#fff; color:var(--ink); font-weight:600;
+  }
+  .global-settings select.active{border-color:var(--math); background:#eff6ff; color:var(--math);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-top">
+      <svg class="logo" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="28" rx="6" fill="#4f6ef7"/><path d="M15 20h18M15 26h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="30" r="3" fill="#ffd166"/></svg>
+      <div class="title">
+        <h1>学习小站 · 四科学习台</h1>
+        <p>数学 · 语文 · 英语 · 科学 一站式学习管理</p>
+      </div>
+      <div class="global-settings">
+        <div class="gs-item"><span class="gs-label">年级</span>
+          <select id="gs_grade" onchange="onGlobalSetting('grade')">
+            <option value="">— 选择 —</option>
+            <option>一年级</option><option>二年级</option><option>三年级</option>
+            <option>四年级</option><option>五年级</option><option>六年级</option>
+          </select>
+        </div>
+        <div class="gs-item"><span class="gs-label">学期</span>
+          <select id="gs_term" onchange="onGlobalSetting('term')">
+            <option value="">—</option><option>上</option><option>下</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="header-bottom">
+      <div class="sync"><span class="dot"></span><span id="syncTxt">已同步</span></div>
+      <div class="head-actions">
+        <button class="btn ghost sm" onclick="syncFromCloud()">🔄 同步</button>
+        <button class="btn ghost sm" onclick="exportJSON()">导出备份</button>
+        <button class="btn ghost sm" onclick="importJSON()">导入恢复</button>
+        <button class="btn ghost sm" title="云端/AI 提供 JSON 后粘进来一键恢复（即使本地模式也能恢复）" onclick="openRecoverModal()">📋 粘贴 JSON</button>
+        <button class="btn danger sm" onclick="clearAll()">清空</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-k="chinese" onclick="switchTab('chinese')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M6 5h12M6 5v14M6 12h9" stroke="#ef5da8" stroke-width="2" stroke-linecap="round"/></svg>语文</button>
+    <button class="tab" data-k="math" onclick="switchTab('math')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M5 7l4 10M15 7l-4 10M9 12h6" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>数学</button>
+    <button class="tab" data-k="english" onclick="switchTab('english')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#10b981" stroke-width="2"/><path d="M4 10h16M8 4c1.5 2 1.5 14 0 16M16 4c-1.5 2-1.5 14 0 16" stroke="#10b981" stroke-width="1.6"/></svg>英语</button>
+    <button class="tab" data-k="science" onclick="switchTab('science')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M9 3v6l-4 9a2 2 0 002 3h10a2 2 0 002-3l-4-9V3" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/><path d="M8 3h8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>科学</button>
+  </div>
+
+  <!-- 数学 -->
+  <div class="panel" id="p-math">
+    <div class="sub-tabs sub-math">
+      <button class="sub-tab active" data-sk="test" onclick="switchSub('math','test')">数学测评</button>
+      <button class="sub-tab" data-sk="hw" onclick="switchSub('math','hw')">作业批改</button>
+    </div>
+
+    <div class="sub-panel active" id="sp-math-test">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M7 4h7l-6 8h6M14 16h3" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>数学测评</h3>
+      <p class="desc">填写出卷需求 → 生成试卷条目；点「复制出卷指令」发给我（WorkBuddy），即可生成真实试卷。</p>
+      <div class="row3">
+        <div><label>年级</label><input id="m_grade" placeholder="如 四年级"></div>
+        <div><label>单元 / 章节</label><input id="m_chapter" placeholder="如 分数"></div>
+        <div><label>难度</label><select id="m_diff"><option>易</option><option selected>中</option><option>难</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label>题型</label><select id="m_type"><option>选择</option><option>填空</option><option>计算</option><option>解答</option><option>混合</option></select></div>
+        <div><label>题量</label><input id="m_count" type="number" min="1" value="10"></div>
+      </div>
+      <button class="btn block" style="margin-top:12px" onclick="addPaper('数学')">＋ 生成试卷需求</button>
+      <div class="list" id="paperList-数学" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+
+    <div class="sub-panel" id="sp-math-hw">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>作业批改</h3>
+      <p class="desc">录入作业与我的作答，点「请求 AI 批改」复制指令发给我，把批改结果贴在「AI 批改」里。</p>
+      <div><label>作业标题</label><input id="hw_title" placeholder="如 练习册P32 应用题"></div>
+      <div class="row2">
+        <div><label>截止日期</label><input id="hw_due" type="date"></div>
+        <div><label>得分</label><input id="hw_score" type="number" placeholder="批改后填"></div>
+      </div>
+      <div><label>题目 / 我的作答</label><textarea id="hw_ans" placeholder="粘贴题目与你写的解答过程"></textarea></div>
+      <div><label>AI 批改（可粘贴我的批改意见）</label><textarea id="hw_cor" placeholder="我批改后把结论贴到这里"></textarea></div>
+      <button class="btn block" style="margin-top:12px" onclick="addHomework()">＋ 添加作业</button>
+      <div class="list" id="hwList" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+  </div>
+
+  <!-- 语文 -->
+  <div class="panel active" id="p-chinese">
+    <div class="sub-tabs">
+      <button class="sub-tab active" data-sk="test" onclick="switchSub('chinese','test')">语文测评</button>
+      <button class="sub-tab" data-sk="essay" onclick="switchSub('chinese','essay')">作文收录</button>
+    </div>
+
+    <div class="sub-panel active" id="sp-chinese-test">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M7 4h7l-6 8h6M14 16h3" stroke="#ef5da8" stroke-width="2" stroke-linecap="round"/></svg>语文测评</h3>
+      <p class="desc">填写需求生成试卷条目；「复制出卷指令」发给我即可生成真实试卷（含基础/阅读/作文）。</p>
+      <div class="row3">
+        <div><label>年级</label><input id="c_grade" placeholder="如 六年级"></div>
+        <div><label>单元 / 主题</label><input id="c_chapter" placeholder="如 记叙文阅读"></div>
+        <div><label>难度</label><select id="c_diff"><option>易</option><option selected>中</option><option>难</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label>题型</label><select id="c_type"><option>基础</option><option>阅读</option><option>作文</option><option>混合</option></select></div>
+        <div><label>题量</label><input id="c_count" type="number" min="1" value="12"></div>
+      </div>
+      <button class="btn block" style="margin-top:12px" onclick="addPaper('语文')">＋ 生成试卷需求</button>
+      <div class="list" id="paperList-语文" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+
+    <div class="sub-panel" id="sp-chinese-essay">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>作文收录与批改</h3>
+      <p class="desc">可上传作文图片自动收录，按「立意/结构/语言/素材/书写/亮点」六维记录批改，一键复制指令让我（资深语文老师）识别图片并精批。</p>
+      <div class="row2">
+        <div><label>作文标题</label><input id="es_title" placeholder="如 我的暑假"></div>
+        <div><label>作文时间</label><input id="es_date" type="date"></div>
+      </div>
+      <div><label>正文（可粘贴，或上传图片由 AI 识别）</label><textarea id="es_content" placeholder="粘贴作文正文，或上传下方图片让 AI 识别"></textarea></div>
+      <div><label>上传作文图片（最多 9 张，自动压缩到 800px）</label>
+        <input id="es_imgs" type="file" accept="image/*" multiple onchange="onEssayImages(event)" style="padding:8px;background:#fff"></div>
+      <div class="thumbs" id="es_thumbs"></div>
+      <button class="btn block" style="margin-top:12px" onclick="addEssay()">＋ 收录并发起 AI 批改（含图片）</button>
+      <div class="list" id="essayList"></div>
+    </div>
+    </div>
+  </div>
+
+  <!-- 英语 -->
+  <div class="panel" id="p-english">
+    <div class="sub-tabs sub-english">
+      <button class="sub-tab active" data-sk="word" onclick="switchSub('english','word')">单词本</button>
+      <button class="sub-tab" data-sk="err" onclick="switchSub('english','err')">错题本</button>
+    </div>
+
+    <div class="sub-panel active" id="sp-english-word">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="9" stroke="#10b981" stroke-width="2"/><path d="M4 10h16M8 4c1.5 2 1.5 14 0 16M16 4c-1.5 2-1.5 14 0 16" stroke="#10b981" stroke-width="1.6"/></svg>单词本</h3>
+      <p class="desc">积累生词，点击切换掌握度（未掌握→模糊→掌握），未掌握的会进入「今天要处理」复习。</p>
+      <div class="row2">
+        <div><label>单词</label><input id="wd_word" placeholder="如 apple"></div>
+        <div><label>释义</label><input id="wd_mean" placeholder="如 苹果"></div>
+      </div>
+      <button class="btn block" style="margin-top:12px" onclick="addWord()">＋ 添加单词</button>
+      <div class="list" id="wordList" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+
+    <div class="sub-panel" id="sp-english-err">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 3l9 16H3z" stroke="#10b981" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg>错题本</h3>
+      <p class="desc">记录错题、错因与订正，考前集中复盘。</p>
+      <div><label>题目</label><input id="er_title" placeholder="错题简述"></div>
+      <div class="row2">
+        <div><label>错因</label><textarea id="er_reason" placeholder="为什么错"></textarea></div>
+        <div><label>订正</label><textarea id="er_fix" placeholder="正确解法"></textarea></div>
+      </div>
+      <button class="btn block" style="margin-top:12px" onclick="addError('英语')">＋ 添加错题</button>
+      <div class="list" id="errList-英语" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+  </div>
+
+  <!-- 科学 -->
+  <div class="panel" id="p-science">
+    <div class="sub-tabs sub-science">
+      <button class="sub-tab active" data-sk="exp" onclick="switchSub('science','exp')">实验记录</button>
+      <button class="sub-tab" data-sk="err" onclick="switchSub('science','err')">错题本</button>
+    </div>
+
+    <div class="sub-panel active" id="sp-science-exp">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M9 3v6l-4 9a2 2 0 002 3h10a2 2 0 002-3l-4-9V3" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/><path d="M8 3h8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>实验记录</h3>
+      <p class="desc">记录假设、步骤与结论，沉淀探究过程。</p>
+      <div class="row2">
+        <div><label>实验名称</label><input id="ex_name" placeholder="如 种子发芽条件"></div>
+        <div><label>日期</label><input id="ex_date" type="date"></div>
+      </div>
+      <div><label>假设 / 步骤</label><textarea id="ex_step" placeholder="实验假设与操作步骤"></textarea></div>
+      <div><label>结论</label><textarea id="ex_con" placeholder="观察到的现象与结论"></textarea></div>
+      <button class="btn block" style="margin-top:12px" onclick="addExperiment()">＋ 添加实验</button>
+      <div class="list" id="expList" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+
+    <div class="sub-panel" id="sp-science-err">
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 3l9 16H3z" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>错题本</h3>
+      <p class="desc">记录科学错题、错因与订正。</p>
+      <div><label>题目</label><input id="sr_title" placeholder="错题简述"></div>
+      <div class="row2">
+        <div><label>错因</label><textarea id="sr_reason" placeholder="为什么错"></textarea></div>
+        <div><label>订正</label><textarea id="sr_fix" placeholder="正确解法"></textarea></div>
+      </div>
+      <button class="btn block" style="margin-top:12px" onclick="addError('科学')">＋ 添加错题</button>
+      <div class="list" id="errList-科学" data-sp-bindable="database" data-sp-database-id="4EcAjvLO7W54P7dGeWLmi0"></div>
+    </div>
+    </div>
+  </div>
+
+  <div class="tip">提示：本工作台数据保存在你当前浏览器（离线可用）。点右上角「导出备份」可随时下载 JSON；换设备时「导入恢复」即可迁移。点各模块「复制出卷/批改指令」发给我，我能直接生成试卷与批改。</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept="application/json" style="display:none" onchange="handleImport(event)">
+<div class="lb" id="lightbox" onclick="if(event.target===this)closeLightbox()"><span class="close" onclick="closeLightbox()">×</span><img src="" alt=""></div>
+
+<!-- 粘贴 JSON 恢复 modal（应急方案：清缓存/SDK 未注入时恢复数据） -->
+<div id="recoverModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
+  <div style="background:#fff;max-width:560px;width:calc(100% - 32px);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px 24px 20px;">
+    <h3 style="margin:0 0 8px;font-size:17px;color:#1f2937;">📋 粘贴 JSON 一键恢复</h3>
+    <p style="margin:0 0 12px;font-size:13px;color:#6b7280;line-height:1.7;">
+      把 AI 提供的 <b>云端 JSON</b>（或备份导出文件内容）粘到下面文本框，点「恢复」即可。支持的格式：<br>
+      ① 直接的作文数组 <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">[{"id":"...","title":"...",...}]</code><br>
+      ② 完整工作台备份 <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">{"essays":[...], ...}</code>
+    </p>
+    <textarea id="recoverArea" placeholder="把 JSON 粘到这里…" style="width:100%;height:160px;border:1px solid #d1d5db;border-radius:8px;padding:10px;font-family:Menlo,Consolas,monospace;font-size:12px;resize:vertical;box-sizing:border-box;"></textarea>
+    <p id="recoverMsg" style="display:none;margin:8px 0 0;font-size:13px;line-height:1.6;"></p>
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn ghost sm" onclick="closeRecoverModal()">取消</button>
+      <button class="btn sm" onclick="doRecoverFromText()">🚀 立即恢复</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== 存储：本地缓存 + 资料库云端同步 ===== */
+const PREFIX='wb_study_';
+const K={papers:'papers',hw:'homework',essays:'essays',words:'words',exp:'experiments',err:'errors',meta:'meta',settings:'settings'};
+const DATABASE_ID='4EcAjvLO7W54P7dGeWLmi0'; // 资料库 Database ID（云端同步目标）
+const LABELS={papers:'试卷',homework:'作业',essays:'作文',words:'单词',experiments:'实验',errors:'错题',meta:'配置',settings:'全局设置'};
+const K2S={papers:'papers',homework:'hw',essays:'essays',words:'words',experiments:'exp',errors:'err',settings:'settings'};
+/* 真实作文种子（云端 7 篇，2026-08-26 同步）-- 作为离线/本地模式兜底，保证页面永远有数据 */
+const SEED_ESSAYS = [
+  {
+    "id": "mt7w7yfk1urr",
+    "title": "第一次看中医",
+    "content": "今天，我和妈妈为了减肥去看了中医，这个馆名字叫\"孙泰和\"，这是我第一次看中医，心中又期待又忐忑。\n\n进入中医馆，一股中药味扑面而来。我们挂好号，到了中医室，医生给我把了脉后说：\"要推拿、针灸。\"我一听\"针灸\"！不要不要那会很痛的！\"医生说：\"这不痛，不信你问别人。\"问了一圈，所有人都说不痛，但我还是半信半疑地拒绝了。\n\n很快，医生就在背上推拿，那个很痛很痛，好在只推了一会儿。开始艾灸了，我躺在床上，眼睛、鼻子都是烟，熏得我眼泪都出来了。这时我看向一旁，一个男孩正在针灸，还是在头上。我再三问了他痛不痛，他每次都说痛不痛。还给了我勇气，我终于同意针灸了，医生拿来了细细的小针，一扎，果然不痛。\n\n一套流程下来，虽然中间因为没吃早饭，肚子饿得咕咕直叫，但我得肚子还是小了一圈。回家的路上，回头看那三个被太阳照得发光的孙泰和，我心里由衷得感叹：\"中医真神奇啊！\" ",
+    "date": "2026-08-16",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ3ViWUhWQWRJT3JJ",
+    "dims": {
+      "liyi": "中心明确，紧扣“第一次看中医”。由亲身经历推拿/艾灸/针灸写出从“怕针抗拒”到“同意针灸”的心理转变，结尾“中医真神奇”自然点题，真实有温度。",
+      "jiegou": "五段起承转合清晰——开头(背景+期待忐忑)→进馆(把脉+拒针)→推拿(痛感)→艾灸(熏烟+男孩)→针灸(蚊子叮感)→结果(肚子小一圈)→结尾(回望发光店名+感叹)。v2 调整了体验段顺序，先痛后不痛形成强对比。",
+      "yuyan": "v2 体感描写升级（鱼钩勾肉/按重感/咬牙吸气/蚊子叮感/暖宝宝温热），删除了“很痛很痛/果然不痛”的空话，对仗上更生动。",
+      "sucai": "新颖（中医推拿/艾灸/针灸，非套路题材）；“孙泰和”具体店名+男孩头上针灸细节真实；结尾“肚子小一圈”童趣幽默。",
+      "shuxie": "卷面整洁，约 420 字达标，标点基本规范。",
+      "liangdian": "v2 体感描写最动人——“整个像被放气的气球”“针尖像蚊子叮了一下，又痒又麻”都是具象化的童趣语言；首尾呼应（孙泰和发光字样）。"
+    },
+    "polish": "今天，我和妈妈为了减肥去了孙泰和中医馆，这是我第一次看中医，心中又期待又忐忑。\n\n一进中医馆，一股中药味扑面而来。我们挂好号，到了中医室，医生给我把了脉后说：“要推拿、针灸。”我一听“针灸”——不要不要，那会很痛的！医生说：“这不痛，不信你问别人。”问了一圈，所有人都说不痛，但我还是半信半疑地拒绝了。\n\n很快，医生就在我背上推拿，手指像鱼钩一样勾住肩胛骨两侧的肌肉，又捏、又揉、又压，皮肤又胀又疼，好像背上压了一块大石头，一推一推地使劲往下按。我咬着牙，嘴里嘶嘶地吸气，连呼吸都觉得吃力。好在只推了一小会儿，医生松手的时候，我整个人像被放气的气球，软塌塌地趴在床上。\n\n开始艾灸了，我躺在床上，眼睛、鼻子都被烟熏得直流泪。这时我看向一旁，一个男孩正在头上针灸。我再三问了他痛不痛，他每次都说“不痛”。他的话给了我勇气，我终于同意针灸了。医生拿来了细细的小针，我紧张得闭紧眼睛。针尖轻轻碰到皮肤，像被蚊子叮了一下，又痒又麻——真的不痛，只是有点发胀、热乎乎的，像被暖宝宝贴在了身上。\n\n一套流程下来，虽然中间因为没吃早饭，肚子饿得咕咕直叫，但我的肚子还是小了一圈。回家的路上，我回头看那三个被太阳照得发光的“孙泰和”字样，心里由衷地感叹：“中医真神奇啊！”",
+    "score": 86,
+    "status": "已批改（v2 修订）",
+    "createdAt": "2026-08-25",
+    "score95": "",
+    "polish95": "",
+    "cuo": [],
+    "hao": []
+  },
+  {
+    "id": "mt7bvdzy12v9",
+    "title": "交朋友",
+    "content": "今天，我和妈妈一行人去购物，一进门，一排排娃娃机映入眼帘，一些帅气的恐龙玩偶一下子吸引了我。\n我激动地对妈妈说：\"妈妈给我买十个币，我想抓娃娃！\"妈妈无奈地扶了扶头很无奈的说：\"行吧，给你钱，体验一下。\"我开心地用钱兑了币，然后兴致勃勃地开始夹。第一次太重，第二次抓偏了，这些恐龙像是在和我作对，怎么也抓不住。直到第十次，我终于看到希望——爪子抓起恐龙，眼看就要落入出口了，结果爪子像失去了力气，一滑，恐龙又掉在了出口边上。\n这时一个和我差不多大的小朋友走过来了，他穿着灰色衣服、黑色裤子，走到机子前，塞入游戏币，眼睛紧紧盯住恐龙，手紧紧握住摇柄，然后猛得一按，爪子稳稳抓住恐龙，落到了出口。我看得瞠目结舌，心中暗暗佩服。\n看到别人都能抓到，我有点不甘心，于是我又向妈妈要了十个币，我叫住那个小朋友，对他说：\"你好厉害，我这里有十个币，你可以帮我抓一只恐龙吗？\"他笑了笑说行。于是他又开始抓，一次两次三次不断尝试，前九次都失败了，第十次眼看就要到手了，可小恐龙脚一滑又掉到了一边。币也用完了，又是无功而返，我垂头丧气刚要离开，那个小朋友应该是洞察了我的情绪，他说：\"没事，你等一下，我用我的币帮你抓。\"他又抓了几次，终于，第五次恐龙再次滑了一下——不过这次是滑到了出口，看到恐龙掉出来的那一刻，我们拍手叫好开心极了。\n我拿着恐龙玩偶兴奋地大喊大叫跑向妈妈给他炫耀，妈妈提醒我要知恩图报，不可以白拿别人的东西，我此时也看到了旁边的冰淇淋店，于是我去买了冰淇淋拿给小朋友，他也很意外，我们交了朋友加了微信，约定下次还一起来抓娃娃，这真是充实的一天。",
+    "date": "2026-08-26",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ1R6Q1Bpd3pFUWZD",
+    "dims": {
+      "liyi": "题目是'交朋友'，全文围绕'因抓娃娃相识、因互助与感恩成为朋友'展开，结尾'约定下次还一起来抓娃娃'自然点题。相比初稿，友谊由'他帮我抓（用自己币）/我回请冰淇淋'两个真实动作撑起，立意落地不空洞。",
+      "jiegou": "起（进店被恐龙吸引）→承（我屡抓不中）→转（旁观小孩成功→请他帮忙仍失败→他主动用自己币帮我）→合（拿到娃娃→妈妈教知恩图报→回请冰淇淋→交到朋友）。起承转合完整，节奏舒服，无初稿结尾硬凑的断裂感。",
+      "yuyan": "动词鲜活（'扶了扶头''塞入''盯住''握住''猛得一按''滑''掉'），并用上'瞠目结舌''无功而返''知恩图报''充实的一天'等书面语。仍有硬伤：'无奈'重复、'猛得'应为'猛地'、'给他炫耀'搭配不当、个别缺标点（见修改意见）。",
+      "sucai": "素材具体有画面：娃娃机、十个币、灰色上衣黑色裤子的小孩、紧握摇柄、多次'滑掉'、用自己币再帮一次、回请冰淇淋。细节真实可信，不套路。",
+      "shuxie": "打字稿，卷面无虞；标点整体规范，仅'我们交了朋友加了微信'等处少逗号，个别长句可断句。",
+      "liangdian": "①'恐龙再次滑了一下——不过这次是滑到了出口'：用同一动作勾连前文'滑掉（失败）'与这一回'滑进出口（成功）'，呼应巧妙；②情感线完整（激动→受挫→佩服→不甘→失落→感动→快乐→感恩），并在'他用自己币帮我'后补'我心里一热'让感动更饱满；③'知恩图报'点题自然，冰淇淋回礼让'交朋友'水到渠成。"
+    },
+    "polish": "今天，我和妈妈一行人去购物。一进门，一排排娃娃机映入眼帘，几只帅气的恐龙玩偶一下子吸引了我。\n我激动地对妈妈说：\"妈妈，给我买十个币吧，我想抓娃娃！\"妈妈无奈地扶了扶额，说：\"行吧，给你钱，就体验一次。\"我开心地兑了币，兴致勃勃地夹起来。第一次太重，第二次抓偏了，那些恐龙像故意和我作对，怎么也抓不住。直到第十次，我终于看到希望——爪子稳稳夹起恐龙，眼看就要落进出口，谁知爪子一松，恐龙又滑回了边上。\n这时，一个和我差不多大的小朋友走了过来。他穿着灰色上衣、黑色长裤，走到机前塞进游戏币，眼睛死死盯住恐龙，双手紧紧握住摇柄，猛地一按——爪子稳稳抓住恐龙，落进了出口。我看得瞠目结舌，心里暗暗佩服。\n见别人都能抓到，我有些不甘心，又向妈妈要了十个币。我叫住那个小朋友：\"你好厉害！我这有十个币，你能帮我抓一只恐龙吗？\"他笑着答应了。一次、两次、三次……他不停地试，前九次全都落空；第十次眼看就要到手，小恐龙脚一滑，又掉到了一边。币用完了，又是无功而返。我垂头丧气刚要离开，他大概是看出了我的失落，说：\"没事，你等一下，我用我的币帮你抓。\"听他这么说，我心里一热，一时竟不知道该说什么好。他又试了几回，到第五次，恐龙再次一滑——不过这一回，是滑进了出口！看见恐龙掉出来的那一刻，我们击掌欢呼，开心极了。\n我抱着恐龙玩偶，兴奋地大喊着跑向妈妈，得意地向她炫耀。妈妈提醒我：受人帮助要知恩图报，不能白拿别人的东西。我正看见旁边的冰淇淋店，便去买了一个，拿给那位小朋友。他有些意外，我们聊着天加了微信，约定下次还一起来抓娃娃。这真是充实的一天。",
+    "score": 88,
+    "status": "已批改（95标准·三件套）",
+    "createdAt": "2026-08-24",
+    "score95": 95,
+    "polish95": "今天，我和妈妈去商场购物。刚进门，一阵\"叮叮当当\"的电子音乐就把我拽了过去——一排排娃娃机亮着彩灯，几只毛茸茸的恐龙玩偶瞪着圆溜溜的眼睛，可爱得让我挪不动脚。我拽着妈妈的袖子撒娇：\"妈妈，给我买十个币嘛，我想抓恐龙！\"妈妈无奈地扶了扶额，笑着说：\"行吧，就让你体验一次。\"我美滋滋地兑了币，\"哐当\"把硬币投进去，攥紧摇杆就夹。第一次爪子太松，恐龙像抹了油似的滑走；第二次又抓偏了。那些小恐龙仿佛故意跟我作对，十次里九次落空。第十次，爪子好不容易抱住恐龙，我的心都提到了嗓子眼——眼看就要落进出口，谁知\"咔\"地一松，恐龙骨碌碌滚回了角落。我急得鼻尖都冒了汗。这时，一个和我年纪相仿的男孩走了过来。他穿着灰色卫衣、黑色运动裤，二话不说塞进一枚币，眼睛死死盯住那只恐龙，双手紧握摇杆，猛地一按——爪子稳稳扣住恐龙的肚子，\"咚\"的一声，恐龙落进了出口！我看得瞪圆了眼，心里又羡慕又佩服：要是我也能这样就好了。见别人随手就中，我更不服气，又向妈妈要了十个币。我拦住那男孩：\"你太厉害了！我这有十个币，能请你帮我抓一只吗？\"他咧嘴一笑，爽快地接过摇杆。一次、两次、三次……他试了九次都没成，第十次眼看要抓到，恐龙脚一滑又溜了。币用光了，我垂头丧气，正要放弃，他像是看穿了我的失落，说：\"别急，我用我的币再帮你试一次。\"听他这么说，我心里一热，一时竟不知道说什么好。他又试了几回，到第五次，恐龙一滑——这次，是稳稳滑进了出口！我们同时欢呼起来，击掌庆贺。我抱着恐龙玩偶，举得高高的跑向妈妈，得意地晃给她看。妈妈摸摸我的头：\"人家白白帮你，你该怎么表示？\"我忽然想起旁边的冰淇淋店，赶紧买了一个递给男孩。他愣了一下，笑着接过去。我们加了微信，约好下次还一起\"战斗\"。回家的路上，我抱着温热的恐龙，心里甜甜的。原来，两个素不相识的人，也可以因为一份小小的善意，变成好朋友。那只恐龙玩偶，不只是战利品，更是我们友谊的起点。这真是充实又温暖的一天。",
+    "cuo": [
+      {
+        "wrong": "猛得",
+        "correct": "猛地",
+        "type": "的地得误用",
+        "note": "副词修饰动词用'地'",
+        "src": "猛得一按"
+      },
+      {
+        "wrong": "的说",
+        "correct": "地说",
+        "type": "的地得误用",
+        "note": "同上",
+        "src": "无奈地说"
+      },
+      {
+        "wrong": "无奈地扶了扶头很无奈的说",
+        "correct": "无奈地扶了扶额，说",
+        "type": "重复啰嗦",
+        "note": "'无奈'重复、扶头别扭",
+        "src": "妈妈无奈地扶了扶头很无奈的说"
+      },
+      {
+        "wrong": "给他炫耀",
+        "correct": "向她炫耀",
+        "type": "用词不当",
+        "note": "'给'搭配错、指代乱",
+        "src": "跑向妈妈给他求解"
+      },
+      {
+        "wrong": "我们交了朋友加了微信",
+        "correct": "我们聊着天加了微信",
+        "type": "标点缺失",
+        "note": "缺逗号断开",
+        "src": "我们交了朋友加了微信"
+      },
+      {
+        "wrong": "洞察了我的情绪",
+        "correct": "看出了我的失落",
+        "type": "用词不当",
+        "note": "'洞察'过重，小学不宜",
+        "src": "应该是洞察了我的情绪"
+      }
+    ],
+    "hao": [
+      {
+        "word": "瞠目结舌",
+        "why": "生动写惊讶",
+        "usage": "形容吃惊到说不出话",
+        "src": "我看得瞠目结舌"
+      },
+      {
+        "word": "无功而返",
+        "why": "书面语精炼",
+        "usage": "白忙一场空手回",
+        "src": "又是无功而返"
+      },
+      {
+        "word": "知恩图报",
+        "why": "点题词精准",
+        "usage": "表达感恩、扣'交朋友'题",
+        "src": "妈妈提醒我要知恩图报"
+      },
+      {
+        "word": "滑到出口（呼应）",
+        "why": "同一动作勾连失败与成功",
+        "usage": "用重复动作做前后呼应",
+        "src": "恐龙再次一滑——不过这次滑进了出口"
+      },
+      {
+        "word": "心里一热",
+        "why": "细腻心理",
+        "usage": "写被善意触动的一瞬",
+        "src": "听他这么说，我心里一热"
+      },
+      {
+        "word": "扶了扶额",
+        "why": "动作细节",
+        "usage": "比'叹气'更具体",
+        "src": "妈妈无奈地扶了扶额"
+      },
+      {
+        "word": "击掌欢呼",
+        "why": "场景贴切",
+        "usage": "抓娃娃成功时用",
+        "src": "我们击掌欢呼"
+      }
+    ]
+  },
+  {
+    "id": "mt5wtjerar29",
+    "title": "二游南浔古镇",
+    "content": "周六，妈妈带我和姐姐去湖南浔古镇，这是我第二次来了，对这里所有地方都熟悉。\n\n这次妈妈说坐船到另一头再走回来就玩了一圈了，于是我们坐上了船。这船上面有个篷子，船身是木头，边上还有轮子稳住船。船出发了，这船出发时一晃一晃地，看地人心惊胆战，好在调了一下人数后船平缓前行。我转过身看向平静地水面，忽然，有几条小鱼在水中游动，但他们看到船，就到一边去了，所以很少看到。船游啊游，中途有许多小桥，有的高高的，爬上去就累地气喘吁吁；有的低低的，过桥很轻松；还有的长满绿植，美极了。真是\"江南好风光呀\"。\n\n下了船，我们开始往回走。走着逛着，天上就开始暗淡下来，突然，雷声响起，天边狂风肆虐，天下雨起了细细密地小雨，让人措手不及，我们找了家店躲雨。我看向窗外，一栋栋房子在蒙蒙细雨中若影若现，水上小船陆陆续续地经过，我不由感叹：\"这就是江南烟雨啊！\"\n\n雨停了，阳光洒在路面上，我依依不舍地走出了古镇。回望那白墙黑顶地房子，让我明白了，\"第二次\"从不是浪费时间，而是发现那新的美好。",
+    "date": "2026-08-09",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ2Z6U01PUXNLcE5W",
+    "dims": {
+      "liyi": "从'二游'切入，结尾升华'第二次从不是浪费时间，而是发现那新的美好'，有思考、有哲理味；晴天与雨天的对比恰好呼应'二游'，构思巧。",
+      "jiegou": "四段脉络清晰：首段点题'二游'→船上赏景（小鱼、小桥）→遇雨躲雨（烟雨江南）→雨后感悟收束；天气变化递进自然。不足：第二段偏长（近200字），可拆两段。",
+      "yuyan": "白话流畅，有'若影若现''陆陆续续''狂风肆虐''心惊胆战'等好词；结尾感叹'这就是江南烟雨啊！'是全文文眼。问题：'地/得'混用3处（看地人/平静地水面/白墙黑顶地）、成语错字'若影若现'→'若隐若现'、'细细密地小雨'叠词不规范。",
+      "sucai": "江南水乡意象典型且不堆砌（篷船、小桥、绿植、烟雨、白墙黑顶）；'小鱼躲船''爬桥气喘吁吁'细节真实童趣；素材贴合'二游'主题未跑题。",
+      "shuxie": "图片录入无法判卷面；从正文看标点基本规范，引号、感叹号使用到位，段落空行清晰。",
+      "liangdian": "1）'这就是江南烟雨啊！'画龙点睛；2）结尾'第二次不是浪费时间，而是发现那新的美好'超越同龄人感悟；3）晴天vs雨天对比呼应'二游'；4）'小鱼躲船'细节生动有镜头感。"
+    },
+    "polish": "二游南浔古镇\n\n周六，妈妈带我和姐姐去湖州南浔古镇，这是我第二次来了，对这里所有地方都熟悉。\n\n这次妈妈说，坐船到另一头再走回来，就算玩了一圈。于是我们坐上了船。船上面有个篷子，船身是木头做的，边上还有船桨稳住船。船出发了，一晃一晃的，看得人心惊胆战；好在大家坐稳后，船又平缓前行。我转过身看向平静的水面，忽然，几条小鱼在水中游动，但它们看到船，就躲到一边去了，所以很少能看到。船游啊游，中途有许多小桥：有的高高的，爬上去累得气喘吁吁；有的低低的，过桥很轻松；还有的长满绿植，美极了。真是\"江南好风光\"呀！\n\n下了船，我们开始往回走。走着逛着，天上就开始暗淡下来。突然，雷声响起，天边狂风肆虐，细细密密的小雨下了起来，让人措手不及。我们找了家店躲雨。我看向窗外，一栋栋房子在蒙蒙细雨中若隐若现，水上小船陆陆续续地经过。我不由感叹：\"这就是江南烟雨啊！\"\n\n雨停了，阳光洒在路面上，我依依不舍地走出了古镇。回望那白墙黑顶的房子，我明白了：\"第二次\"从来不是浪费时间，而是发现新的美好。",
+    "score": "82",
+    "status": "已批改",
+    "createdAt": "2026-08-23",
+    "score95": "",
+    "polish95": "",
+    "cuo": [],
+    "hao": []
+  },
+  {
+    "id": "mt5ooghk4ojt",
+    "title": "漂流",
+    "content": "今天，妈妈带我和姐姐一行人去漂流，那儿有六个关卡，可好玩了。\n\n我们坐了公交，到了收票口。这辆船底有洞，这样有利于排水，里面有两个桨是用来划船的。我们坐上了船，划到了第一个大关卡，这个关卡的水呈波浪式，一下去一起一伏，也不太刺激。我们下来后就等妈妈她们下来，她们一下来，我急忙握住水枪，拉起管子，瞄准，一压，水就打到了她们，看她们被水滋得睁不开眼的样子，真是太好笑了。\n\n剩下关卡最刺激的是第四个，这个关卡一下去水泼了我一身，嘴里都是水，呛死我了。更刺激的是一下来还有打水仗的NPC，你来我往，滋拉滋拉一片欢声笑语。\n\n古人云\"乐极生悲\"，一下船我就成了\"红人\"，不光脸红，手也红，可以说是损失惨重。",
+    "date": "2026-07-26",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ0dKbGVaZG5UTmZK",
+    "dims": {
+      "liyi": "题材真实，扣住'漂流'主题写一次亲水经历，方向正确；但立意偏浅，全文止于'好玩''刺激'，没有更深层的生活感悟或成长反思。",
+      "jiegou": "四段式齐全：起（出发）→承（逗妈妈打水仗）→转（第四关+打水仗NPC）→合（下船变'红人'）；段落安排合理，详略基本得当。不足：第二段'我们下来后就等妈妈她们下来'两句'下来'紧邻重复。",
+      "yuyan": "童趣浓：动作描写（拉、瞄准、一压）有镜头感，比喻'红人''损失惨重'形象生动，符合儿童视角。个别用字待规范：'这辆船'量词不当（船应用'艘/条'）、'一行人'偏书面；'水泼了我一身''打到了她们'等用词准确生动。",
+      "sucai": "选材贴近真实生活，漂流+打水仗是孩子喜欢的话题；但素材偏单薄，缺少具体细节（浪高、妈妈反应、姐姐反应等），停留在'好玩''刺激'层面。",
+      "shuxie": "字迹工整，有修改痕迹（说明边写边思考，是好习惯）；标点基本规范，段落空行清晰，格式整齐。",
+      "liangdian": "1）童真吐槽极佳：'红人''损失惨重'的自嘲妙笔（晒成红人、狼狈夸张为损失惨重）；2）动作镜头感强：'拉→瞄准→一压'三拍节奏；3）结尾用'乐极生悲'收束与'红人'形成反差萌。"
+    },
+    "polish": "漂流\n\n今天，妈妈带我和姐姐一起去漂流，那儿有六个关卡，可好玩呢！\n\n我们坐了公交，到了收票口。上了船才发现，这艘船的船底有洞——这样有利于排水，船里还放着两只桨，是用来划船的。我们坐稳了船，划到了第一个大关卡。这个关卡的水呈波浪式，一起一伏，也不太刺激。我们划到岸边下来后，就等妈妈她们上岸。她们一下来，我急忙握住水枪，拉起管子，瞄准，一压——\"嗤\"的一声，水就打到了她们脸上！看她们被水滋得睁不开眼的样子，可真是太好笑了。\n\n剩下关卡里最刺激的要数第四个。这个关卡一下去，水就泼了我一身，嘴里也灌满了水，呛死我了！更刺激的是上岸后还有打水仗的环节——和别的游客\"噼里啪啦\"地互射，你来我往，欢声笑语一片。\n\n古人云\"乐极生悲\"。一下船我就成了\"红人\"：不光脸红，手也晒得通红，火辣辣的，可以说是\"损失惨重\"。\n\n这次漂流虽然狼狈，却是我和姐姐这个夏天最开心的记忆。",
+    "score": "79",
+    "status": "已批改",
+    "createdAt": "2026-08-23",
+    "score95": "",
+    "polish95": "",
+    "cuo": [],
+    "hao": []
+  },
+  {
+    "id": "mt5okh7ac3hl",
+    "title": "特殊的“挣钱”经历",
+    "content": "今天，为了凑齐五元钱买心仪的玩具，我决定想方设法地“挣”一笔钱。\n        第一回合，我厚着脸皮向妈妈开口。妈妈头也不抬地说：“等你姐姐来了再说。”我急得直跺脚，撒娇道：“现在就给我嘛，这可是最新款！”妈妈却铁面无私地拒绝：“不行，想要零花钱，得靠自己去挣。”我在心里暗暗较劲：“哼！‘自己挣’就自己挣，谁怕谁！”\n       我盘点了一下自己的“小金库”：只有之前存的1元，看来还得挣4元。既然硬来不行，那就智取。我跑到妈妈身后，一边给她揉肩，一边观察她的脸色。谁知我刚讨好地笑了笑，妈妈就识破了我的意图：“无事献殷勤，是不是又想要钱了？”我大吃一惊，心想：妈妈难道长了火眼金睛，还是会读心术？竟然这么厉害！\n        软的不行，我只好改变策略，开始拐弯抹角地试探：“妈，今天的作文我想写‘拼玩具’……”本以为妈妈会接话茬，结果她只是淡淡地点了点头，我的“暗示计划”彻底宣告失败。\n        就在这时，爸爸打来电话说要买杯咖啡。这真是天赐良机！我灵机一动，自告奋勇地喊道：“我去拿！”虽然外面烈日炎炎，柏油马路仿佛都要被烤化了，但我一想到即将到手的“巨款”，脚下便生风，心里暗暗打起了小算盘：“这次一定要收点跑腿费！”\n拿到咖啡后，我理直气壮地对爸爸说：“老爸，5元跑腿费，包邮到家哦！”没想到爸爸竟然爽快地答应了。拿着这来之不易的5元钱，我开心极了。\n         这次经历不仅让我买到了玩具，更让我深深体会到了挣钱的不易。以后，我一定要更加珍惜爸爸妈妈的劳动成果。",
+    "date": "2026-07-19",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ09KUmVOdUVMVmpx",
+    "dims": {
+      "liyi": "中心明确，扣住“特殊的挣钱经历”题目，把向家长“讨要”也当成一次“挣钱”来算计，童趣反讽；结尾升华到珍惜父母劳动成果，有温度。",
+      "jiegou": "起承转合清晰（想挣5元→向妈妈四连败→爸爸来电抓跑腿机会→拿到钱+感悟），过渡自然。",
+      "yuyan": "口语化、童趣浓，“厚着脸皮”“铁面无私”“火眼金睛”“脚下生风”“小算盘”“巨款”“包邮到家哦”鲜活；仅“既然硬来不行”指代略跳。",
+      "sucai": "选材真实贴近儿童生活（要零花钱、揉肩讨好、给爸爸跑腿），典型不堆砌；“拼玩具”暗示段与主线稍远可精简。",
+      "shuxie": "用户文字录入，无法判卷面；标点基本规范，建议首段再分拆使节奏更明快。",
+      "liangdian": "1）童真心理刻画极佳；2）妈妈形象生动；3）比喻“柏油马路仿佛都要被烤化了”画面感强；4）结尾点题自然；5）题目用引号点明童趣反讽，构思巧。"
+    },
+    "polish": "特殊的“挣钱”经历\n\n今天，为了凑齐五元钱买心仪的玩具，我决定想方设法地“挣”一笔钱。\n\n第一回合，我厚着脸皮向妈妈开口。妈妈头也不抬地说：“等你姐姐来了再说。”我急得直跺脚，撒娇道：“现在就给我嘛，这可是最新款！”妈妈却铁面无私地拒绝：“不行，想要零花钱，得靠自己去挣。”我在心里暗暗较劲：“哼！‘自己挣’就自己挣，谁怕谁！”\n\n我盘点了一下自己的“小金库”：只有之前存的1元。直接撒娇不行，那就智取。我跑到妈妈身后，一边给她揉肩，一边观察她的脸色。谁知我刚讨好地笑了笑，妈妈就识破了我的意图：“无事献殷勤，是不是又想要钱了？”我大吃一惊，心想：妈妈难道长了火眼金睛，还是会读心术？竟然这么厉害！\n\n就在这时，爸爸打来电话说要买杯咖啡。这真是天赐良机！我灵机一动，自告奋勇地喊道：“我去拿！”虽然外面烈日炎炎，柏油马路仿佛都要被烤化了，但我一想到即将到手的“巨款”，脚下便生风，心里暗暗打起了小算盘：“这次一定要收点跑腿费！”\n\n拿到咖啡后，我理直气壮地对爸爸说：“老爸，5元跑腿费，包邮到家哦！”没想到爸爸竟然爽快地答应了。拿着这来之不易的5元钱，我开心极了。\n\n这次经历不仅让我买到了玩具，更让我深深体会到挣钱的不易——原来五元钱，要顶着大太阳跑一趟腿才能挣到。以后，我一定要更珍惜爸爸妈妈的劳动成果。",
+    "score": "88",
+    "status": "已批改",
+    "createdAt": "2026-08-23",
+    "score95": "",
+    "polish95": "",
+    "cuo": [],
+    "hao": []
+  },
+  {
+    "id": "mt5ohvv5q4st",
+    "title": "等台风",
+    "content": "        7月10日一早，我就在手机上看到了台风预警。当时我可好奇了，台风到底长什么样，威力大不大，我激动极了，可再一看晚上12点才来，我当时都睡着了吧。\n       早上，我们出去买东西，当时天空万里无云，烈日高照，根本没风没雨。这时妈妈、爸爸就说：“哪里有台风来的样子？”我突然想到一句谚语：“也许这就是暴风雨前的宁静”，果然，到了中午天空暗淡了下来，虽然不时有几缕阳光照在窗台上，但还是掩盖不住那天空的压抑感。过了一会儿，天边成了紫色，妈妈说：“这是要变天了。”果然在最后一缕阳光也消失后，天空刮起了大风，连云也被吹跑了。然后天空下起了瓢泼大雨，雨点又密又细，一个雨点还没落地又一个雨点与它擦身而过。再加上狂风呼啸，真是可怕极了。\n       就这样，我们怀着忐忑的心，睡了过去。",
+    "date": "2026-07-12",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ2FWa0F2dnNmdHFr",
+    "dims": {
+      "liyi": "中心明确、扣题，完整记录等台风过程与心情变化；但立意停留在记录经历，缺少升华，建议结尾点「一家人在一起就踏实」让立意有温度。",
+      "jiegou": "按时间顺序推进（看预警→买东西晴→变天→狂风暴雨→入睡），脉络清晰；结尾稍仓促，可加一笔收束。",
+      "yuyan": "亮点——「一个雨点还没落地又一个雨点与它擦身而过」动态画面极强；「连云也被吹跑了」拟人生动；谚语「暴风雨前的宁静」自然。问题——「果然」重复两次（第二次改「果然不出所料」）；「可再一看晚上12点才来…」啰嗦精简；「那天空的压抑感」去「那」；「雨点又密又细」搭配怪改「又细又密」。",
+      "sucai": "选材真实贴近生活（台风预警/买东西/天空变化）；谚语引用加分；无堆砌不偏题。",
+      "shuxie": "用户录入口述文字，无法判卷面；标点基本规范，引号逗号句号正确，3段分布合理。",
+      "liangdian": "1）「一个雨点还没落地又一个雨点与它擦身而过」极富动态画面感（全文最佳）；2）「连云也被吹跑了」拟人生动；3）谚语自然嵌入有文化底蕴；4）天空变化观察细腻有层次；5）心理线索清晰（好奇→激动→怀疑→紧张）。"
+    },
+    "polish": "等台风\n\n7月10日一早，我就在手机上看到了台风预警。当时我可好奇了，台风到底长什么样，威力大不大，激动极了。可一看预报说晚上12点才登陆，那时我早该睡着了。\n\n早上，我们出去买东西。当时天空万里无云，烈日高照，根本没风没雨。妈妈、爸爸都说：\"哪有台风要来的样子？\"我突然想起一句谚语：\"这也许就是暴风雨前的宁静。\"果然，到了中午天空暗淡下来，虽不时有几缕阳光照在窗台上，却掩盖不住天空的压抑。过了一会儿，天边变成了紫色，妈妈说：\"这是要变天了。\"果然不出所料，最后一缕阳光消失后，天空刮起了大风，连云也被吹跑了。紧接着下起瓢泼大雨，雨点又细又密，一个雨点还没落地，又一个雨点与它擦身而过。狂风呼啸，真是可怕极了。\n\n夜深了，台风在外面咆哮。我缩在被窝里，听着风声雨声，忽然觉得：台风虽可怕，但只要一家人在一起，心里就踏实了。就这样，我们怀着忐忑又安稳的心，睡了过去。",
+    "score": "86",
+    "status": "已批改",
+    "createdAt": "2026-08-23",
+    "score95": "",
+    "polish95": "",
+    "cuo": [],
+    "hao": []
+  },
+  {
+    "id": "mt5og2ro7t6e",
+    "title": "吃必胜客",
+    "content": "今天，我终于可以吃必胜客了。在一个星期天的早晨，我无意间发现必胜客和奥特曼联名的套餐，从那儿打车去必胜客，妈妈终于松口了。于是我就嚷着「要去吃必胜客」。我和爸爸先去看电影，结束再下来吃。我来到必胜客那扇复古的门前，用力一推，一股浓浓的披萨香味扑进鼻腔。我迫不及待地找了个位子坐下，拿起菜单开始点菜。第一道菜上来了，是一块圆形的披萨，边上围了一圈香肠，透过薄薄的饼底可以看到里面有一包芝士、一包玉米。第二道是烤得金黄金黄的披萨，蘸一下番茄酱一口咬下去，真美味极了。第三道是披萨，上面有米饭、鸡块、肉片，各种料都混在一起，有一种说不出的美味。第四道是做成奥特曼形状的小蛋糕，吃起来又香又甜。吃完这么多，我打了个嗝说：「正好七分饱」。吃完必胜客，回家的路上，我又打嗝了，嘴边还留着番茄酱的酸、披萨的香、蛋糕的软糯。想起和爸爸一起看电影的下午，我心里有说不出的快乐。",
+    "date": "2026-08-23",
+    "img": [],
+    "tdocUrl": "https://docs.qq.com/aio/DQ3BueXpNUVdITkVX",
+    "dims": {
+      "liyi": "中心「吃必胜客很开心」扣题紧密，但偏浅，缺更深的人生感悟；建议结尾点出「和爸爸一起的快乐」或「美食带来的幸福」，让立意有温度。",
+      "jiegou": "时间线「发现套餐→请求→看电影→到店→点菜→上菜→回家回味」四段推进，脉络清晰、层次合理；中间四道菜略平铺，建议挑一道重点详写（如番茄酱披萨的金黄+酸甜），其他略写，让节奏有起伏。",
+      "yuyan": "亮点——「一股浓浓的披萨香味扑进鼻腔」五感+通感有画面感；「正好七分饱」童趣口语生活气息浓。问题——错别字（「原形」→「圆形」、「要」→「烤」、「可」→「沾」）；拼音代替字过多（pishi/pisa/piza/jiàng/xiāng/nuò/suān/sūgé/gé/gè）建议随认字量增加逐步减少；「心里有无限的快乐」直白可更含蓄；重复字「终于终于」「gé gé」去重；「朋带tang过透明的希可以看到里面有一包零件，一包卡」句意不清需重写。",
+      "sucai": "选材新颖有时代感——必胜客×奥特曼联名套餐是当下小学生热点；披萨、蛋糕描写真实。建议加一处「对比」（之前想吃没吃上 vs 今天的满足），让期待感更立体。",
+      "shuxie": "字迹基本工整，有少量涂改（「不过」划掉改成「于是我」）；段落4段分布合理，引号、逗号、句号基本规范。落款字迹潦草（疑「吴义」），建议把名字写在标题旁或第一段开头更清晰。",
+      "liangdian": "1）「一股浓浓的披萨香味扑进鼻腔」嗅觉通感很生动；2）「正好七分饱」童趣口语真实可爱；3）「我又打嗝了，不停回味刚刚吃的美餐」细节真实、结尾有回味感；4）选材紧跟时代（必胜客×奥特曼联名）。"
+    },
+    "polish": "今天，我终于可以吃必胜客了。在一个星期天的早晨，我无意间发现必胜客和奥特曼联名的套餐，从那儿打车去必胜客，妈妈终于松口了。于是我就嚷着「要去吃必胜客」。我和爸爸先去看电影，结束再下来吃。我来到必胜客那扇复古的门前，用力一推，一股浓浓的披萨香味扑进鼻腔。我迫不及待地找了个位子坐下，拿起菜单开始点菜。第一道菜上来了，是一块圆形的披萨，边上围了一圈香肠，透过薄薄的饼底可以看到里面有一包芝士、一包玉米。第二道是烤得金黄金黄的披萨，蘸一下番茄酱一口咬下去，真美味极了。第三道是披萨，上面有米饭、鸡块、肉片，各种料都混在一起，有一种说不出的美味。第四道是做成奥特曼形状的小蛋糕，吃起来又香又甜。吃完这么多，我打了个嗝说：「正好七分饱」。吃完必胜客，回家的路上，我又打嗝了，嘴边还留着番茄酱的酸、披萨的香、蛋糕的软糯。想起和爸爸一起看电影的下午，我心里有说不出的快乐。",
+    "score": "82",
+    "status": "已批改",
+    "createdAt": "2026-08-23",
+    "score95": "",
+    "polish95": "",
+    "cuo": [],
+    "hao": []
+  }
+];
+
+const SYNC_KEYS=['papers','homework','essays','words','experiments','errors','settings'];
+function dbReady(){return !!(window.__SMART_PAGE__&&window.__SMART_PAGE__.database);}
+function load(k){try{return JSON.parse(localStorage.getItem(PREFIX+k))||[]}catch(e){return[]}}
+function cacheSave(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v));}catch(e){}}
+function cloudPush(k,label,arr){
+  if(!dbReady())return;
+  var db=window.__SMART_PAGE__.database;
+  var props={'记录ID':{text:k},'名称':{text:label||k},'数据':{text:JSON.stringify(arr)},'更新时间':{date:new Date().toISOString()}};
+  db.query({databaseId:DATABASE_ID,filter:{property:{property:'记录ID',text:{equals:k}}},pageSize:1})
+    .then(function(res){ if(res&&res.results&&res.results.length){return db.updateRecord({databaseId:DATABASE_ID,recordId:res.results[0]._id,properties:props});} return db.addRecord({databaseId:DATABASE_ID,properties:props}); })
+    .catch(function(err){console.warn('[cloud] push 失败',k,err);});
+}
+function cloudPull(k){
+  return new Promise(function(resolve){
+    if(!dbReady()){resolve(null);return;}
+    var db=window.__SMART_PAGE__.database;
+    db.query({databaseId:DATABASE_ID,filter:{property:{property:'记录ID',text:{equals:k}}},pageSize:1})
+      .then(function(res){ if(res&&res.results&&res.results.length){ try{resolve(JSON.parse(res.results[0]['数据']));}catch(e){resolve(null);} } else resolve(null); })
+      .catch(function(err){console.warn('[cloud] pull 失败',k,err);resolve(null);});
+  });
+}
+function save(k,v){ cacheSave(k,v); cloudPush(k,LABELS[k]||k,v); flashSync(); }
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let state={papers:[],hw:[],essays:[],words:[],exp:[],err:[],settings:{grade:'',term:''}};
+
+function seedIfNeeded(){
+  if(localStorage.getItem(PREFIX+K.meta))return;
+  const t=todayStr();
+  const y=new Date(Date.now()-86400000); const ys=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+  state.papers=[
+    {id:uid(),subject:'数学',grade:'四年级',chapter:'分数',diff:'中',type:'计算',count:10,status:'待出卷',createdAt:t},
+    {id:uid(),subject:'语文',grade:'六年级',chapter:'记叙文阅读',diff:'中',type:'阅读',count:12,status:'已出卷',createdAt:t}
+  ];
+  state.hw=[
+    {id:uid(),title:'练习册P32 应用题',due:ys,ans:'小明有3/4块蛋糕，吃了1/4，还剩多少？\n我的作答：3/4-1/4=2/4=1/2',cor:'',score:'',status:'待批改',createdAt:ys},
+    {id:uid(),title:'单元测试卷·计算',due:t,ans:'12×5=60…',cor:'整体正确，第3题进位有误',score:'92',status:'已批改',createdAt:t}
+  ];
+  state.essays=JSON.parse(JSON.stringify(SEED_ESSAYS));
+  state.words=[
+    {id:uid(),word:'apple',mean:'苹果',mastery:'未掌握',createdAt:t},
+    {id:uid(),word:'bridge',mean:'桥',mastery:'模糊',createdAt:t}
+  ];
+  state.exp=[
+    {id:uid(),name:'种子发芽条件',date:t,step:'假设：有水的种子会发芽。将A(水+土)、B(无水土)对比。',con:'A发芽，B未发芽，说明水是关键条件。',createdAt:t}
+  ];
+  state.err=[
+    {id:uid(),subject:'英语',title:'时态混淆',reason:'一般过去式用了原形',fix:' yesterday→went',createdAt:t}
+  ];
+  persistAll();
+  localStorage.setItem(PREFIX+K.meta,'1');
+  if(dbReady())cloudPush(K.meta,LABELS.meta,'1');
+}
+function persistAll(){
+  save(K.papers,state.papers);save(K.hw,state.hw);save(K.essays,state.essays);
+  save(K.words,state.words);save(K.exp,state.exp);save(K.err,state.err);
+  save(K.settings,state.settings);
+}
+function reloadAll(){
+  state.papers=load(K.papers);state.hw=load(K.hw);state.essays=load(K.essays);
+  state.words=load(K.words);state.exp=load(K.exp);state.err=load(K.err);
+  var s=load(K.settings);
+  state.settings=(s&&typeof s==='object')?s:{grade:'',term:''};
+}
+
+/* ===== 云端同步 ===== */
+let _syncing=false;
+function setSync(t){var e=document.getElementById('syncTxt');if(e)e.textContent=t;}
+/* 合并两数组：以云端为权威，本地仅在「云端空、本地非空」时补充分段；
+   并按标题(title)去重——云端同名记录优先，避免 seed 随机 id 与云端记录重复显示 */
+function mergeArr(localArr, cloudArr){
+  localArr=localArr||[]; cloudArr=cloudArr||[];
+  if(!cloudArr.length) return localArr.slice();
+  if(!localArr.length) return cloudArr.slice();
+  var cloudTitles={}; cloudArr.forEach(function(c){ if(c&&c.title) cloudTitles[c.title]=1; });
+  var out=[];
+  cloudArr.forEach(function(c){
+    var l=localArr.find(function(x){return x&&x.id===c.id;});
+    var m={}; for(var k in c){ if(c.hasOwnProperty(k)) m[k]=c[k]; }
+    if(l){ for(var k2 in l){ if(!l.hasOwnProperty(k2))continue; var lv=l[k2], cv=c[k2];
+      var lvE=(lv===null||lv===undefined||lv===''||(Array.isArray(lv)&&lv.length===0));
+      var cvE=(cv===null||cv===undefined||cv===''||(Array.isArray(cv)&&cv.length===0));
+      if(!lvE&&cvE) m[k2]=lv; } }
+    out.push(m);
+  });
+  localArr.forEach(function(x){ if(x&&x.id && !cloudArr.some(function(c){return c.id===x.id;}) && !(x.title&&cloudTitles[x.title])) out.push(x); });
+  return out;
+}
+function syncToCloud(){
+  if(!dbReady())return;
+  SYNC_KEYS.forEach(function(k){ cloudPush(k,LABELS[K2S[k]]||k,state[K2S[k]]); });
+  cloudPush(K.meta,LABELS.meta,'1');
+}
+function syncFromCloud(){
+  if(!dbReady()){ setSync('本地模式'); return Promise.resolve(); }
+  if(_syncing){ return Promise.resolve(); }
+  _syncing=true; setSync('同步中…');
+  var anyCloud=false, changed=false;
+  var arrKeys=SYNC_KEYS.filter(function(k){return k!==K.settings;});
+  return Promise.all(arrKeys.map(function(k){
+    return cloudPull(k).then(function(arr){
+      if(arr&&Array.isArray(arr)){
+        anyCloud=true;
+        var sk=K2S[k];
+        var merged=mergeArr(state[sk],arr);
+        if(JSON.stringify(state[sk])!==JSON.stringify(merged)){ state[sk]=merged; changed=true; }
+        cacheSave(k,arr);
+      }
+    });
+  })).then(function(){
+    return cloudPull(K.settings);
+  }).then(function(s){
+    if(s&&typeof s==='object'){
+      anyCloud=true;
+      // 云端优先，但保留本地 grade/term 已填的（保护用户新输入）
+      var ns={grade:s.grade||'',term:s.term||''};
+      var cur=state.settings||{};
+      if(!ns.grade && cur.grade) ns.grade=cur.grade;
+      if(!ns.term && cur.term) ns.term=cur.term;
+      if(JSON.stringify(ns)!==JSON.stringify(cur)){ state.settings=ns; changed=true; }
+      cacheSave(K.settings,ns);
+      applyGlobalSettings();
+    }
+  }).then(function(){
+    return cloudPull(K.meta);
+  }).then(function(m){
+    if(m){ localStorage.setItem(PREFIX+K.meta,'1'); }
+    else if(!localStorage.getItem(PREFIX+K.meta)){
+      arrKeys.forEach(function(k){ cloudPush(k,LABELS[K2S[k]]||k,state[K2S[k]]); });
+      cloudPush(K.settings,LABELS.settings,state.settings);
+      localStorage.setItem(PREFIX+K.meta,'1'); cloudPush(K.meta,LABELS.meta,'1');
+      setSync('已上传本地数据'); _syncing=false; return;
+    }
+    if(changed){
+      var ae=document.activeElement;
+      if(ae&&(ae.tagName==='TEXTAREA'||ae.tagName==='INPUT'||ae.tagName==='SELECT')){ setTimeout(reloadRender,1500); }
+      else reloadRender();
+    }
+    setSync('已同步 · 云端'); _syncing=false;
+  }).catch(function(err){ console.warn('[cloud] sync 失败',err); setSync('同步失败 · 本地可用'); _syncing=false; });
+}
+function startCloud(){
+  setSync('连接云端…');
+  syncFromCloud();
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) syncFromCloud(); });
+  window.addEventListener('focus',function(){ syncFromCloud(); });
+  setInterval(function(){ syncFromCloud(); }, 45000);
+}
+
+/* ===== 工具 ===== */
+function flashSync(){var e=document.getElementById('syncTxt');if(!e)return;e.textContent='已保存';clearTimeout(flashSync._t);flashSync._t=setTimeout(function(){e.textContent=dbReady()?'已同步 · 云端':'本地模式';},700);}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800);}
+function copyText(t){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast('指令已复制，发给我即可生成')).catch(()=>fallbackCopy(t));}else{fallbackCopy(t);}}
+function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('指令已复制');}catch(e){toast('复制失败，请手动复制');}ta.remove();}
+function $(id){return document.getElementById(id)}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ===== Tab ===== */
+function switchTab(k){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.k===k));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  $('p-'+k).classList.add('active');
+}
+function switchSub(s,k){
+  var scope=document.getElementById('p-'+s);
+  if(!scope) return;
+  scope.querySelectorAll('.sub-tab').forEach(t=>t.classList.toggle('active',t.dataset.sk===k));
+  scope.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  var t=$('sp-'+s+'-'+k); if(t) t.classList.add('active');
+}
+
+/* ===== 试卷 ===== */
+function addPaper(subject){
+  const chap=$(subject==='数学'?'m_chapter':'c_chapter').value.trim();
+  if(!chap){toast('请填写单元/章节');return;}
+  const g=$(subject==='数学'?'m_grade':'c_grade').value.trim() || (state.settings&&state.settings.grade) || '—';
+  const diff=$(subject==='数学'?'m_diff':'c_diff').value;
+  const type=$(subject==='数学'?'m_type':'c_type').value;
+  const count=$(subject==='数学'?'m_count':'c_count').value||'10';
+  state.papers.unshift({id:uid(),subject,grade:g,chapter:chap,diff,type,count,status:'待出卷',createdAt:todayStr()});
+  save(K.papers,state.papers);renderPapers(subject);renderOverview();renderToday();
+  toast('已生成试卷需求');
+}
+function paperPrompt(p){
+  return `请为【${p.subject}】生成一份试卷：\n年级：${p.grade}\n单元/章节：${p.chapter}\n题型：${p.type}\n题量：约${p.count}题\n难度：${p.diff}\n要求：按常见试卷结构排版，给出题目与参考答案/解析，可直接打印使用。`;
+}
+function renderPapers(subject){
+  const box=$('paperList-'+subject); if(!box)return;
+  const arr=state.papers.filter(p=>p.subject===subject);
+  if(!arr.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:6px 0">暂无试卷需求，先在上方生成一条吧</div>';return;}
+  box.innerHTML=arr.map(p=>`
+    <div class="item">
+      <div class="top">
+        <div><div class="name">${esc(p.chapter)}</div><div class="meta">${esc(p.grade)} · ${esc(p.type)} · ${p.count}题 · 难度${esc(p.diff)}</div></div>
+        <span class="badge ${p.status==='待出卷'?'b-wait':'b-done'}">${p.status}</span>
+      </div>
+      <div class="acts">
+        <button class="btn soft sm" onclick="copyText(paperPrompt(${JSON.stringify(p).replace(/"/g,'&quot;')}))">复制出卷指令</button>
+        ${p.status==='待出卷'?`<button class="btn ghost sm" onclick="markPaper('${p.id}')">标记已出卷</button>`:''}
+        <button class="btn danger sm" onclick="del('papers','${p.id}','paperList-${p.subject}')">删除</button>
+      </div>
+    </div>`).join('');
+}
+function markPaper(id){const p=state.papers.find(x=>x.id===id);if(p){p.status='已出卷';save(K.papers,state.papers);renderPapers(p.subject);renderOverview();renderToday();}}
+
+/* ===== 数学作业 ===== */
+function addHomework(){
+  const title=$('hw_title').value.trim(); if(!title){toast('请填写作业标题');return;}
+  state.hw.unshift({id:uid(),title,due:$('hw_due').value,ans:$('hw_ans').value,cor:$('hw_cor').value,score:$('hw_score').value,status:($('hw_cor').value.trim()?'已批改':'待批改'),createdAt:todayStr()});
+  save(K.hw,state.hw);renderHw();renderOverview();renderToday();
+  $('hw_title').value='';$('hw_due').value='';$('hw_ans').value='';$('hw_cor').value='';$('hw_score').value='';
+  toast('已添加作业');
+}
+function hwPrompt(h){
+  return `请帮我批改这份数学作业：\n【标题】${h.title}\n【我的作答】\n${h.ans}\n请逐题判断正误、指出错误原因并给出正确答案与得分。`;
+}
+function renderHw(){
+  const box=$('hwList'); if(!box)return;
+  if(!state.hw.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:6px 0">暂无作业</div>';return;}
+  box.innerHTML=state.hw.map(h=>{
+    const over=h.status==='待批改'&&h.due&&h.due<todayStr();
+    return `<div class="item">
+      <div class="top">
+        <div><div class="name">${esc(h.title)}</div><div class="meta">截止：${h.due||'未设'} ${h.score!==''?('· 得分 '+esc(h.score)):''}</div></div>
+        <span class="badge ${h.status==='待批改'?(over?'b-over':'b-wait'):'b-done'}">${h.status}</span>
+      </div>
+      ${h.ans?`<div class="meta" style="margin-top:6px;white-space:pre-wrap">${esc(h.ans)}</div>`:''}
+      <details><summary>查看/编辑 AI 批改与得分</summary>
+        <div class="subgrid full"><div class="subfield"><label>AI 批改</label><textarea id="cor_${h.id}">${esc(h.cor)}</textarea></div></div>
+        <div class="subgrid"><div class="subfield"><label>得分</label><input id="sc_${h.id}" type="number" value="${esc(h.score)}"></div>
+        <div class="subfield"><label>状态</label><select id="st_${h.id}"><option ${h.status==='待批改'?'selected':''}>待批改</option><option ${h.status==='已批改'?'selected':''}>已批改</option></select></div></div>
+        <button class="btn soft sm" style="margin-top:8px" onclick="saveHw('${h.id}')">保存批改</button>
+      </details>
+      <div class="acts">
+        <button class="btn soft sm" onclick="copyText(hwPrompt(${JSON.stringify(h).replace(/"/g,'&quot;')}))">请求 AI 批改</button>
+        <button class="btn danger sm" onclick="del('hw','${h.id}','hwList')">删除</button>
+      </div>
+    </div>`;}).join('');
+}
+function saveHw(id){const h=state.hw.find(x=>x.id===id);if(!h)return;h.cor=$('cor_'+id).value;h.score=$('sc_'+id).value;h.status=$('st_'+id).value;save(K.hw,state.hw);renderHw();renderOverview();renderToday();toast('已保存批改');}
+
+/* ===== 语文作文 ===== */
+let pendingEssayImgs=[]; let lbImgs=[];
+function onEssayImages(ev){
+  const files=Array.from(ev.target.files||[]).slice(0,9);
+  compressImages(files,out=>{pendingEssayImgs=out;renderEssayThumbs();});
+}
+function renderEssayThumbs(){
+  const box=$('es_thumbs'); if(!box)return;
+  lbImgs=[]; pendingEssayImgs.forEach(s=>lbImgs.push(s));
+  box.innerHTML=pendingEssayImgs.map((s,idx)=>`<img class="thumb" src="${s}" onclick="openLightbox(${idx})">`).join('');
+}
+function addEssay(){
+  const title=$('es_title').value.trim(); if(!title){toast('请填写作文标题');return;}
+  const date=$('es_date').value||todayStr();
+  const id=uid();
+  state.essays.unshift({id,title,content:$('es_content').value,date,img:pendingEssayImgs.slice(),tdocUrl:'',dims:{liyi:'',jiegou:'',yuyan:'',sucai:'',shuxie:'',liangdian:''},polish:'',score:'',status:'待批改',createdAt:todayStr()});
+  save(K.essays,state.essays);renderEssays();renderOverview();renderToday();
+  $('es_title').value='';$('es_content').value='';$('es_date').value=todayStr();pendingEssayImgs=[];renderEssayThumbs();
+  copyText(essayPrompt(id));
+  toast('✅ 已收录，批改指令已复制。请到 WorkBuddy 对话框粘贴指令并把同一张作文图片发我，我会自动批改 + 收录腾讯文档，把含链接的回填块发回——粘到下方一键回填即可。');
+}
+function essayPrompt(id){
+  const e=state.essays.find(x=>x.id===id); if(!e)return '';
+  const hasImg=(e.img&&e.img.length);
+  const imgNote=hasImg?('\n（本作文已在「学生学习工作台」收录 '+e.img.length+' 张图片。请连同本指令把同一张作文图片发到对话中，用 Read 工具识别文字后批改）'):'';
+  const body=(e.content&&e.content.trim())?e.content:'（见上传图片，请先识别图片中的文字）';
+  return `请用「作文批改助手（essay-grader）」资深语文老师流程批改这篇作文：\n【标题】${e.title}\n【作文时间】${e.date||'未填'}\n【正文】\n${body}\n${imgNote}\n【要求】\n1. 按六维（立意/结构/语言/素材/书写/亮点）给出逐条修改意见（🔴必须改 / 🟡建议改）。\n2. 给出润色定稿、得分与状态。\n3. **必须**调用 tencent-docs skill（create_smartcanvas_by_mdx）把「原文+赏析+修改意见+定稿」收录到腾讯文档，归入「作文批改」目录——返回链接。\n4. 在回复末尾附上「<<ESSAY_RESULT_START>>...<<ESSAY_RESULT_END>>」回填块，字段顺序：标题 / 作文时间 / 立意 / 结构 / 语言 / 素材 / 书写 / 亮点 / 润色定稿 / 得分 / 状态 / **腾讯文档链接**。腾讯文档链接字段填上面 create_smartcanvas_by_mdx 返回的链接，便于我贴回工作台一键回填。`;
+}
+function compressImages(files,cb){
+  const out=[];let i=0;
+  (function next(){
+    if(i>=files.length){cb(out);return;}
+    const f=files[i++];const rd=new FileReader();
+    rd.onload=()=>{const img=new Image();img.onload=()=>{
+      let w=img.width,h=img.height;const max=800;if(w>max){h=Math.round(h*max/w);w=max;}
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+      out.push(cv.toDataURL('image/jpeg',0.82));next();
+    };img.onerror=next;img.src=rd.result;};
+    rd.onerror=next;rd.readAsDataURL(f);
+  })();
+}
+function openLightbox(idx){const lb=$('lightbox');if(!lb)return;lb.querySelector('img').src=lbImgs[idx]||'';lb.classList.add('show');}
+function closeLightbox(){$('lightbox').classList.remove('show');}
+function renderEssays(){
+  lbImgs=[];
+  const box=$('essayList'); if(!box)return;
+  if(!state.essays.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:12px 0;text-align:center">暂无作文，点上方「＋收录并发起 AI 批改」开始 ✍️</div>';return;}
+  box.innerHTML=`<div class="essay-table-wrap"><table class="essay-table">
+    <thead><tr><th style="width:92px">时间</th><th>标题</th><th style="width:62px">得分</th><th style="width:110px">批改链接</th><th style="width:54px">原图</th></tr></thead>
+    <tbody>${state.essays.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>{
+      const d=e.dims||{};
+      const thumb=(e.img&&e.img.length)?(()=>{const idx=lbImgs.length;lbImgs.push(e.img[0]);return `<img class="thumb-sm" src="${e.img[0]}" onclick="openLightbox(${idx})" title="点击放大原图">`;})():'<span class="cell-dash">—</span>';
+      const link=e.tdocUrl?`<a href="${esc(e.tdocUrl)}" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>`:'<span class="cell-dash">—</span>';
+      return `<tr class="essay-row" data-id="${e.id}">
+        <td class="cell-time">${esc(e.date||'—')}</td>
+        <td class="cell-title"><span class="essay-title-link" onclick="toggleEssayDetail('${e.id}')" title="点击展开/收起批改详情">${esc(e.title)}</span><span class="badge ${e.status==='待批改'?'b-wait':'b-done'} sm-badge">${e.status}</span></td>
+        <td class="cell-score">${e.score!==''?`<span class="score-chip">${esc(e.score)}分</span>`:'<span class="cell-dash">—</span>'}</td>
+        <td class="cell-link">${link}</td>
+        <td class="cell-img">${thumb}</td>
+      </tr>
+      <tr class="essay-detail" id="edetail_${e.id}" hidden>
+        <td colspan="5">
+          <div class="essay-detail-inner">
+            ${e.content?`<div class="detail-section"><div class="detail-label">作文正文</div><div class="detail-content">${esc(e.content)}</div></div>`:''}
+            ${(e.img&&e.img.length>1)?`<div class="detail-section"><div class="detail-label">全部原图（点击放大）</div><div class="thumbs">${e.img.map((s,i)=>{const idx=lbImgs.length;lbImgs.push(s);return `<img class="thumb" src="${s}" onclick="openLightbox(${idx})">`;}).join('')}</div></div>`:''}
+            <div class="detail-section"><div class="detail-label">六维批改</div><div class="dim6">
+              <div class="subfield"><label>立意</label><textarea id="d_liyi_${e.id}">${esc(d.liyi)}</textarea></div>
+              <div class="subfield"><label>结构</label><textarea id="d_jiegou_${e.id}">${esc(d.jiegou)}</textarea></div>
+              <div class="subfield"><label>语言</label><textarea id="d_yuyan_${e.id}">${esc(d.yuyan)}</textarea></div>
+              <div class="subfield"><label>素材</label><textarea id="d_sucai_${e.id}">${esc(d.sucai)}</textarea></div>
+              <div class="subfield"><label>书写</label><textarea id="d_shuxie_${e.id}">${esc(d.shuxie)}</textarea></div>
+              <div class="subfield"><label>亮点</label><textarea id="d_liangdian_${e.id}">${esc(d.liangdian)}</textarea></div>
+            </div></div>
+            <div class="detail-section"><div class="detail-label">润色定稿</div><textarea id="pol_${e.id}" class="polish-area">${esc(e.polish)}</textarea></div>
+            <div class="detail-section"><div class="subgrid"><div class="subfield"><label>得分</label><input id="es_sc_${e.id}" value="${esc(e.score)}"></div>
+            <div class="subfield"><label>状态</label><select id="es_st_${e.id}"><option ${e.status==='待批改'?'selected':''}>待批改</option><option ${e.status==='已批改'?'selected':''}>已批改</option></select></div>
+            <div class="subfield" style="grid-column:1/-1"><label>腾讯文档链接（批改档案，可手动粘贴或一键回填）</label><input id="es_url_${e.id}" value="${esc(e.tdocUrl||'')}" placeholder="https://docs.qq.com/aio/..."></div></div></div>
+            <div class="detail-section" style="border-top:1px dashed #d8dee6;padding-top:10px">
+              <label style="font-size:12px;color:#6b7785">粘贴 AI 批改结果（从对话复制末尾回填块，一键回填）</label>
+              <textarea id="paste_${e.id}" placeholder="把对话里 AI 批改结果末尾的 <<ESSAY_RESULT_START>>…<<ESSAY_RESULT_END>> 整段复制到这里"></textarea>
+              <div class="acts" style="margin-top:10px">
+                <button class="btn soft sm" onclick="copyText(essayPrompt('${e.id}'))">📋 复制 AI 批改指令</button>
+                <button class="btn primary sm" onclick="saveEssay('${e.id}')">💾 保存批改</button>
+                <button class="btn danger sm" onclick="del('essays','${e.id}','essayList')">🗑 删除</button>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table></div>`;
+}
+function toggleEssayDetail(id){
+  const r=$('edetail_'+id); if(!r)return;
+  if(r.hasAttribute('hidden')){r.removeAttribute('hidden');r.style.display='';}
+  else{r.setAttribute('hidden','');r.style.display='none';}
+}
+function saveEssay(id){const e=state.essays.find(x=>x.id===id);if(!e)return;e.dims={liyi:$('d_liyi_'+id).value,jiegou:$('d_jiegou_'+id).value,yuyan:$('d_yuyan_'+id).value,sucai:$('d_sucai_'+id).value,shuxie:$('d_shuxie_'+id).value,liangdian:$('d_liangdian_'+id).value};e.polish=$('pol_'+id).value;e.score=$('es_sc_'+id).value;e.status=$('es_st_'+id).value;e.tdocUrl=($('es_url_'+id).value||'').trim();save(K.essays,state.essays);renderEssays();renderOverview();renderToday();toast('已保存批改');}
+function parseEssayResult(id){
+  const e=state.essays.find(x=>x.id===id);if(!e)return;
+  let raw=($('paste_'+id).value||'').trim();
+  const s=raw.indexOf('<<ESSAY_RESULT_START>>'),en=raw.indexOf('<<ESSAY_RESULT_END>>');
+  if(s>=0&&en>s)raw=raw.substring(s+'<<ESSAY_RESULT_START>>'.length,en);
+  const order=['liyi','jiegou','yuyan','sucai','shuxie','liangdian','polish','score','status','tdocUrl'];
+  const names={liyi:'立意',jiegou:'结构',yuyan:'语言',sucai:'素材',shuxie:'书写',liangdian:'亮点',polish:'润色定稿',score:'得分',status:'状态',tdocUrl:'腾讯文档链接'};
+  const map={};let cur=null;
+  raw.split('\n').forEach(line=>{
+    let hit=null;for(const k of order){if(line.startsWith(names[k]+'：')||line.startsWith(names[k]+':')){hit=k;break;}}
+    if(hit){cur=hit;const i=line.indexOf('：');const j=line.indexOf(':');const p=(i>=0?i:j);map[cur]=line.slice(p+1).trim();}
+    else if(cur&&line.trim())map[cur]+='\n'+line.trim();
+  });
+  if(map.liyi!==undefined)e.dims.liyi=map.liyi;
+  if(map.jiegou!==undefined)e.dims.jiegou=map.jiegou;
+  if(map.yuyan!==undefined)e.dims.yuyan=map.yuyan;
+  if(map.sucai!==undefined)e.dims.sucai=map.sucai;
+  if(map.shuxie!==undefined)e.dims.shuxie=map.shuxie;
+  if(map.liangdian!==undefined)e.dims.liangdian=map.liangdian;
+  if(map.polish!==undefined)e.polish=map.polish;
+  if(map.score!==undefined)e.score=map.score;
+  if(map.status!==undefined)e.status=map.status;
+  if(map.tdocUrl!==undefined)e.tdocUrl=map.tdocUrl.trim();
+  save(K.essays,state.essays);renderEssays();renderOverview();renderToday();
+  toast(map.liyi!==undefined||map.polish!==undefined?'已回填批改结果':'未识别到回填内容，请检查是否复制了完整回填块');
+}
+
+/* ===== 英语单词 ===== */
+function addWord(){
+  const w=$('wd_word').value.trim(); if(!w){toast('请填写单词');return;}
+  state.words.unshift({id:uid(),word:w,mean:$('wd_mean').value.trim(),mastery:'未掌握',createdAt:todayStr()});
+  save(K.words,state.words);renderWords();renderOverview();renderToday();
+  $('wd_word').value='';$('wd_mean').value='';toast('已添加单词');
+}
+const MAST=['未掌握','模糊','掌握'];
+function cycleWord(id){const w=state.words.find(x=>x.id===id);if(!w)return;w.mastery=MAST[(MAST.indexOf(w.mastery)+1)%3];save(K.words,state.words);renderWords();renderOverview();renderToday();}
+function renderWords(){
+  const box=$('wordList'); if(!box)return;
+  if(!state.words.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:6px 0">暂无单词</div>';return;}
+  const col={'未掌握':'b-over','模糊':'b-wait','掌握':'b-done'};
+  box.innerHTML=state.words.map(w=>`
+    <div class="item">
+      <div class="top">
+        <div><div class="name">${esc(w.word)}</div><div class="meta">${esc(w.mean)}</div></div>
+        <span class="badge ${col[w.mastery]}">${w.mastery}</span>
+      </div>
+      <div class="acts">
+        <button class="btn ghost sm" onclick="cycleWord('${w.id}')">切换掌握度</button>
+        <button class="btn danger sm" onclick="del('words','${w.id}','wordList')">删除</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ===== 错题 ===== */
+function addError(subject){
+  const title=$(subject==='英语'?'er_title':'sr_title').value.trim(); if(!title){toast('请填写题目');return;}
+  const reason=$(subject==='英语'?'er_reason':'sr_reason').value;
+  const fix=$(subject==='英语'?'er_fix':'sr_fix').value;
+  state.err.unshift({id:uid(),subject,title,reason,fix,createdAt:todayStr()});
+  save(K.err,state.err);renderErr(subject);toast('已添加错题');
+  $(subject==='英语'?'er_title':'sr_title').value='';$(subject==='英语'?'er_reason':'sr_reason').value='';$(subject==='英语'?'er_fix':'sr_fix').value='';
+}
+function renderErr(subject){
+  const box=$('errList-'+subject); if(!box)return;
+  const arr=state.err.filter(e=>e.subject===subject);
+  if(!arr.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:6px 0">暂无错题</div>';return;}
+  box.innerHTML=arr.map(e=>`
+    <div class="item">
+      <div class="top"><div><div class="name">${esc(e.title)}</div></div></div>
+      <div class="meta" style="margin-top:4px"><b>错因：</b>${esc(e.reason)||'—'}</div>
+      <div class="meta" style="margin-top:2px"><b>订正：</b>${esc(e.fix)||'—'}</div>
+      <div class="acts"><button class="btn danger sm" onclick="del('err','${e.id}','errList-${e.subject}')">删除</button></div>
+    </div>`).join('');
+}
+
+/* ===== 科学实验 ===== */
+function addExperiment(){
+  const name=$('ex_name').value.trim(); if(!name){toast('请填写实验名称');return;}
+  state.exp.unshift({id:uid(),name,date:$('ex_date').value,step:$('ex_step').value,con:$('ex_con').value,createdAt:todayStr()});
+  save(K.exp,state.exp);renderExp();
+  $('ex_name').value='';$('ex_date').value='';$('ex_step').value='';$('ex_con').value='';toast('已添加实验');
+}
+function renderExp(){
+  const box=$('expList'); if(!box)return;
+  if(!state.exp.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:6px 0">暂无实验</div>';return;}
+  box.innerHTML=state.exp.map(e=>`
+    <div class="item">
+      <div class="top"><div><div class="name">${esc(e.name)}</div><div class="meta">${e.date||'未设日期'}</div></div></div>
+      <div class="meta" style="margin-top:4px;white-space:pre-wrap"><b>假设/步骤：</b>${esc(e.step)||'—'}</div>
+      <div class="meta" style="margin-top:2px;white-space:pre-wrap"><b>结论：</b>${esc(e.con)||'—'}</div>
+      <div class="acts"><button class="btn danger sm" onclick="del('exp','${e.id}','expList')">删除</button></div>
+    </div>`).join('');
+}
+
+/* ===== 删除 ===== */
+function del(type,id,boxId){
+  if(!confirm('确定删除这条记录？'))return;
+  state[type]=state[type].filter(x=>x.id!==id);
+  save(type,state[type]);
+  rerenderByType(type,boxId);renderOverview();renderToday();toast('已删除');
+}
+function rerenderByType(type,boxId){
+  if(type==='papers'){renderPapers('数学');renderPapers('语文');}
+  else if(type==='hw')renderHw();
+  else if(type==='essays')renderEssays();
+  else if(type==='words')renderWords();
+  else if(type==='exp')renderExp();
+  else if(type==='err'){renderErr('英语');renderErr('科学');}
+}
+
+/* ===== 今天要处理 ===== */
+function renderToday(){
+  const box=$('todayList'); if(!box)return; const t=todayStr(); const items=[];
+  state.hw.forEach(h=>{if(h.status==='待批改'){const over=h.due&&h.due<t;items.push({over,label:`作业待批改：${h.title}`,sub:h.due?('截止 '+h.due):'',go:()=>{switchTab('math');$('hwList').scrollIntoView({behavior:'smooth'});}});}});
+  state.papers.forEach(p=>{if(p.status==='待出卷'){items.push({over:false,label:`待生成试卷：${p.subject}·${p.chapter}`,sub:'点击复制出卷指令',go:()=>switchTab(p.subject==='数学'?'math':'chinese')});}});
+  state.words.forEach(w=>{if(w.mastery!=='掌握'){items.push({over:false,label:`复习单词：${w.word}`,sub:w.mean,go:()=>switchTab('english')});}});
+  state.essays.forEach(e=>{if(e.status==='待批改'){items.push({over:false,label:`作文待批改：${e.title}`,sub:'可请求 AI 六维批改',go:()=>switchTab('chinese')});}});
+  if(!items.length){box.innerHTML='<div class="empty">今天没有待处理的事，继续保持 🎉</div>';return;}
+  box.innerHTML=items.map((it,i)=>`
+    <div class="td-item ${it.over?'over':''}">
+      <span class="td-badge">${it.over?'逾期':(it.sub?'待办':'')}</span>
+      <div class="td-text"><b>${esc(it.label)}</b>${it.sub?(' · '+esc(it.sub)):''}</div>
+      <button class="td-go" onclick="todayGo(${i})">去处理</button>
+    </div>`).join('');
+  window.__todayItems=items;
+}
+function todayGo(i){const it=window.__todayItems&&window.__todayItems[i];if(it)it.go();}
+
+/* ===== 概览图表 ===== */
+function renderOverview(){
+  if(!$('sPaper'))return;
+  $('sPaper').textContent=state.papers.length;
+  $('sHw').textContent=state.hw.filter(h=>h.status==='待批改').length;
+  $('sEssay').textContent=state.essays.filter(e=>e.status==='待批改').length;
+  $('sWord').textContent=state.words.filter(w=>w.mastery!=='掌握').length;
+  // bar chart
+  const data=[['数学',state.papers.filter(p=>p.subject==='数学').length+state.hw.length,'#3b82f6'],
+              ['语文',state.papers.filter(p=>p.subject==='语文').length+state.essays.length,'#ef5da8'],
+              ['英语',state.words.length+state.err.filter(e=>e.subject==='英语').length,'#10b981'],
+              ['科学',state.exp.length+state.err.filter(e=>e.subject==='科学').length,'#f59e0b']];
+  const max=Math.max(1,...data.map(d=>d[1]));
+  $('barWrap').innerHTML='<div style="width:100%">'+data.map(d=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <div style="width:34px;font-size:12px;color:#6b7785">${d[0]}</div>
+      <div style="flex:1;background:#eef1f6;border-radius:8px;height:16px;overflow:hidden"><div style="height:100%;width:${d[1]/max*100}%;background:${d[2]};border-radius:8px"></div></div>
+      <div style="width:22px;text-align:right;font-size:12px;font-weight:600">${d[1]}</div>
+    </div>`).join('')+'</div>';
+  // ring: word mastery
+  const total=state.words.length||1; const mastered=state.words.filter(w=>w.mastery==='掌握').length;
+  const pct=Math.round(mastered/total*100);
+  const r=26,c=2*Math.PI*r,off=c*(1-pct/100);
+  $('ringWrap').innerHTML=`<svg width="72" height="72" viewBox="0 0 72 72">
+    <circle cx="36" cy="36" r="${r}" fill="none" stroke="#eef1f6" stroke-width="9"/>
+    <circle cx="36" cy="36" r="${r}" fill="none" stroke="#10b981" stroke-width="9" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 36 36)"/>
+    <text x="36" y="34" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2933">${pct}%</text>
+    <text x="36" y="48" text-anchor="middle" font-size="9" fill="#6b7785">单词掌握</text></svg>`;
+}
+
+/* ===== 备份 ===== */
+function exportJSON(){
+  const data={meta:'wb_study',exportedAt:new Date().toISOString(),...state};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='学习工作台备份_'+todayStr()+'.json';a.click();toast('已导出备份');
+}
+function importJSON(){if(confirm('导入将覆盖当前数据，建议先导出备份。继续？'))$('fileInput').click();}
+function handleImport(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{
+    let d;
+    try{ d=JSON.parse(r.result); }
+    catch(err){ toast('文件不是合法 JSON：'+err.message); return; }
+    try{
+      ['papers','hw','essays','words','exp','err'].forEach(k=>{if(Array.isArray(d[k]))state[k]=d[k];});
+      persistAll();try{localStorage.setItem(PREFIX+K.meta,'1');}catch(e){}
+      reloadRender();
+      toast('导入成功，共 '+state.essays.length+' 篇作文');
+    }catch(err2){ toast('导入后渲染出错：'+err2.message); }
+  };
+  r.readAsText(f);e.target.value='';
+}
+/* 粘贴 JSON 一键恢复（应急方案：解决 SDK 没注入/缓存清空场景下"页面空了看不到作文"的问题）
+   - 接受 AI 给的 essays 数组 JSON（直接 [..] 形式或 {essays:[..]} 形式）
+   - 也接受完整 {papers,hw,essays,...} 备份 JSON */
+function openRecoverModal(){
+  var m = $('recoverModal'); if(!m) return;
+  $('recoverArea').value = '';
+  $('recoverMsg').style.display='none';
+  m.style.display='flex';
+  setTimeout(function(){ $('recoverArea').focus(); }, 50);
+}
+function closeRecoverModal(){ var m = $('recoverModal'); if(m) m.style.display='none'; }
+function doRecoverFromText(){
+  var raw = ($('recoverArea').value||'').trim();
+  if(!raw){ $('recoverMsg').style.display='block'; $('recoverMsg').style.color='#dc2626'; $('recoverMsg').textContent='请先粘贴 JSON 文本'; return; }
+  var d;
+  try { d = JSON.parse(raw); } catch(e){
+    $('recoverMsg').style.display='block'; $('recoverMsg').style.color='#dc2626';
+    $('recoverMsg').textContent='JSON 解析失败：'+e.message+'\n请确认拷贝完整（含 [ 与 ]）'; return;
+  }
+  if(!d || typeof d!=='object'){ $('recoverMsg').style.display='block'; $('recoverMsg').style.color='#dc2626'; $('recoverMsg').textContent='JSON 顶层必须是对象或数组'; return; }
+  var n = {papers:0,hw:0,essays:0,words:0,exp:0,err:0};
+  if(Array.isArray(d)){
+    // 直接 essays 数组
+    n.essays = d.length;
+    state.essays = d;
+  } else if(typeof d === 'object'){
+    ['papers','hw','essays','words','exp','err'].forEach(function(k){
+      if(Array.isArray(d[k])){ state[k] = d[k]; n[k] = d[k].length; }
+    });
+  }
+  persistAll();
+  try{ localStorage.setItem(PREFIX+K.meta,'1'); }catch(e){}
+  reloadRender();
+  $('recoverMsg').style.display='block';
+  $('recoverMsg').style.color='#059669';
+  $('recoverMsg').textContent='✅ 恢复成功！'+Object.keys(n).filter(k=>n[k]).map(k=>k+'×'+n[k]).join('，')+'。3 秒后自动关闭…';
+  setTimeout(function(){ try{ if(dbReady()) syncToCloud(); }catch(e){} closeRecoverModal(); $('recoverArea').value=''; }, 3000);
+}
+function clearAll(){
+  if(!confirm('⚠️ 确定清空所有学习数据？此操作不可恢复！'))return;
+  ['papers','hw','essays','words','exp','err',K.meta].forEach(k=>localStorage.removeItem(PREFIX+k));
+  reloadAll();reloadRender();toast('已清空，已重置为示例数据');seedIfNeeded();reloadAll();reloadRender();
+  if(dbReady()) syncToCloud();
+}
+
+/* ===== 初始化 ===== */
+function reloadRender(){
+  renderPapers('数学');renderPapers('语文');renderHw();renderEssays();
+  renderWords();renderErr('英语');renderErr('科学');renderExp();
+  renderOverview();renderToday();
+}
+function ensureSeedEssays(){
+  var SEED_PH='暑假里我去外婆家，帮她摘西瓜';
+  var seedTitles={}; SEED_ESSAYS.forEach(function(s){seedTitles[s.title]=1;});
+  // 本地独有的（标题不在种子里，且非示例占位）才保留；与种子同标题的旧版一律被种子权威覆盖
+  var localOnly=state.essays.filter(function(e){
+    return e&&e.title&&!seedTitles[e.title] && !(e.content&&e.content.indexOf(SEED_PH)>=0);
+  });
+  var merged=JSON.parse(JSON.stringify(SEED_ESSAYS)).concat(localOnly);
+  var changed = (merged.length!==state.essays.length) || (JSON.stringify(merged)!==JSON.stringify(state.essays));
+  state.essays=merged;
+  return changed;
+}
+
+function init(){
+  reloadAll();var _seeded=ensureSeedEssays();seedIfNeeded();if(_seeded)cacheSave(K.essays,state.essays);reloadAll();
+  const ed=$('es_date'); if(ed&&!ed.value)ed.value=todayStr();
+  applyGlobalSettings();
+  reloadRender();
+  if(dbReady()) startCloud();
+  else { setSync('本地模式'); setTimeout(function(){ if(dbReady()) startCloud(); else setSync('本地模式'); }, 800); }
+}
+function applyGlobalSettings(){
+  var s=state.settings||{grade:'',term:''};
+  var gs=$('gs_grade'), te=$('gs_term');
+  if(gs){ gs.value=s.grade||''; gs.classList.toggle('active',!!s.grade); }
+  if(te){ te.value=s.term||''; te.classList.toggle('active',!!s.term); }
+  // 同步到所有年级输入框（仅当输入框为空时填入，避免覆盖用户已填的）
+  ['m_grade','c_grade'].forEach(function(id){
+    var el=$(id); if(el && !el.value && s.grade) el.value=s.grade;
+  });
+}
+function onGlobalSetting(key){
+  var gs=$('gs_grade'), te=$('gs_term');
+  if(!state.settings) state.settings={grade:'',term:''};
+  if(key==='grade') state.settings.grade=(gs&&gs.value)||'';
+  if(key==='term') state.settings.term=(te&&te.value)||'';
+  // 实时回填到年级输入框
+  ['m_grade','c_grade'].forEach(function(id){
+    var el=$(id); if(el) el.value=state.settings.grade;
+  });
+  save(K.settings,state.settings);
+  applyGlobalSettings();
+}
+init();
+</script>
+</body>
+</html>
