@@ -170,6 +170,16 @@
   .score-chip{font-size:11px; padding:2px 7px; border-radius:10px; background:#fff7ed; color:#c2410c; font-weight:600;}
   .tdoc-badge{display:inline-flex; align-items:center; gap:3px; padding:4px 9px; border-radius:8px; background:#eaf3ff; color:#3b82f6; font-size:12px; text-decoration:none; font-weight:500; white-space:nowrap;}
   .tdoc-badge:hover{background:#dbeafe;}
+  .cuo-row,.hao-row{border:1px solid var(--line); border-radius:10px; padding:10px; margin-bottom:8px; background:#fff;}
+  .mini-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .cuo-row input,.hao-row input{width:100%; box-sizing:border-box; border:1px solid #d1d5db; border-radius:7px; padding:7px 9px; font-size:12.5px; font-family:inherit; margin-top:6px;}
+  .mini-acts{text-align:right; margin-top:6px;}
+  .mini-empty{color:#9aa5b1; font-size:12.5px; padding:4px 0;}
+  .cuo-tag{display:inline-block; font-size:11px; padding:1px 7px; border-radius:10px; background:#fff0f7; color:#ef5da8; margin-top:5px;}
+  .cuo-wrong{font-weight:600; color:#1f2937; line-height:1.5;}
+  .cuo-correct{color:#15803d; font-weight:600; line-height:1.5;}
+  .cell-note{color:#b45309; font-size:12px; margin-top:5px; line-height:1.5;}
+  .cell-src{color:var(--sub); font-size:12px; margin-top:5px; line-height:1.5; font-style:italic; word-break:break-word;}
   .cell-dash{color:#9aa3af; font-size:14px; display:inline-block; line-height:1; user-select:none; -webkit-user-select:none;}
   .essay-detail td{background:var(--bg); padding:14px 12px !important;}
   .essay-detail-inner{max-width:920px; display:flex; flex-direction:column; gap:10px;}
@@ -307,6 +317,8 @@
     <div class="sub-tabs">
       <button class="sub-tab" data-sk="test" onclick="switchSub('chinese','test')">语文测评</button>
       <button class="sub-tab active" data-sk="essay" onclick="switchSub('chinese','essay')">作文收录</button>
+      <button class="sub-tab" data-sk="cuoci" onclick="switchSub('chinese','cuoci')">错字错词本<span id="tabCuociCount" class="count-badge" style="display:none">0</span></button>
+      <button class="sub-tab" data-sk="haoju" onclick="switchSub('chinese','haoju')">好词好句本<span id="tabHaojuCount" class="count-badge" style="display:none">0</span></button>
     </div>
 
     <div class="sub-panel" id="sp-chinese-test">
@@ -341,6 +353,32 @@
       </div>
       <div class="list" id="essayList"></div>
     </div>
+    </div>
+
+    <!-- 错字错词本 -->
+    <div class="sub-panel" id="sp-chinese-cuoci">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3 style="margin:0"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>错字错词本 <span id="cuociCount" class="count-badge">0</span></h3>
+            <p class="desc" style="margin:4px 0 0">归集每次作文批改里的错字、错词、用法不当。点来源可跳转到该篇作文的腾讯文档。</p>
+          </div>
+        </div>
+        <div class="list" id="cuociList"></div>
+      </div>
+    </div>
+
+    <!-- 好词好句本 -->
+    <div class="sub-panel" id="sp-chinese-haoju">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3 style="margin:0"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 9h8M8 12h6M8 15h8" stroke="#ef5da8" stroke-width="1.6" stroke-linecap="round"/></svg>好词好句本 <span id="haojuCount" class="count-badge">0</span></h3>
+            <p class="desc" style="margin:4px 0 0">归集每次作文里写得好的词、句。点来源可跳转到该篇作文的腾讯文档。</p>
+          </div>
+        </div>
+        <div class="list" id="haojuList"></div>
+      </div>
     </div>
   </div>
 
@@ -509,8 +547,8 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-25",
     "score95": "",
     "polish95": "",
-    "cuo": [],
-    "hao": []
+    "cuoci": [],
+    "haoju": []
   },
   {
     "id": "mt7bvdzy12v9",
@@ -533,7 +571,7 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-24",
     "score95": 95,
     "polish95": "今天，我和妈妈去商场购物。刚进门，一阵\"叮叮当当\"的电子音乐就把我拽了过去——一排排娃娃机亮着彩灯，几只毛茸茸的恐龙玩偶瞪着圆溜溜的眼睛，可爱得让我挪不动脚。我拽着妈妈的袖子撒娇：\"妈妈，给我买十个币嘛，我想抓恐龙！\"妈妈无奈地扶了扶额，笑着说：\"行吧，就让你体验一次。\"我美滋滋地兑了币，\"哐当\"把硬币投进去，攥紧摇杆就夹。第一次爪子太松，恐龙像抹了油似的滑走；第二次又抓偏了。那些小恐龙仿佛故意跟我作对，十次里九次落空。第十次，爪子好不容易抱住恐龙，我的心都提到了嗓子眼——眼看就要落进出口，谁知\"咔\"地一松，恐龙骨碌碌滚回了角落。我急得鼻尖都冒了汗。这时，一个和我年纪相仿的男孩走了过来。他穿着灰色卫衣、黑色运动裤，二话不说塞进一枚币，眼睛死死盯住那只恐龙，双手紧握摇杆，猛地一按——爪子稳稳扣住恐龙的肚子，\"咚\"的一声，恐龙落进了出口！我看得瞪圆了眼，心里又羡慕又佩服：要是我也能这样就好了。见别人随手就中，我更不服气，又向妈妈要了十个币。我拦住那男孩：\"你太厉害了！我这有十个币，能请你帮我抓一只吗？\"他咧嘴一笑，爽快地接过摇杆。一次、两次、三次……他试了九次都没成，第十次眼看要抓到，恐龙脚一滑又溜了。币用光了，我垂头丧气，正要放弃，他像是看穿了我的失落，说：\"别急，我用我的币再帮你试一次。\"听他这么说，我心里一热，一时竟不知道说什么好。他又试了几回，到第五次，恐龙一滑——这次，是稳稳滑进了出口！我们同时欢呼起来，击掌庆贺。我抱着恐龙玩偶，举得高高的跑向妈妈，得意地晃给她看。妈妈摸摸我的头：\"人家白白帮你，你该怎么表示？\"我忽然想起旁边的冰淇淋店，赶紧买了一个递给男孩。他愣了一下，笑着接过去。我们加了微信，约好下次还一起\"战斗\"。回家的路上，我抱着温热的恐龙，心里甜甜的。原来，两个素不相识的人，也可以因为一份小小的善意，变成好朋友。那只恐龙玩偶，不只是战利品，更是我们友谊的起点。这真是充实又温暖的一天。",
-    "cuo": [
+    "cuoci": [
       {
         "wrong": "猛得",
         "correct": "猛地",
@@ -577,7 +615,7 @@ const SEED_ESSAYS = [
         "src": "应该是洞察了我的情绪"
       }
     ],
-    "hao": [
+    "haoju": [
       {
         "word": "瞠目结舌",
         "why": "生动写惊讶",
@@ -643,8 +681,8 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-23",
     "score95": "",
     "polish95": "",
-    "cuo": [],
-    "hao": []
+    "cuoci": [],
+    "haoju": []
   },
   {
     "id": "mt5ooghk4ojt",
@@ -667,8 +705,8 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-23",
     "score95": "",
     "polish95": "",
-    "cuo": [],
-    "hao": []
+    "cuoci": [],
+    "haoju": []
   },
   {
     "id": "mt5okh7ac3hl",
@@ -691,8 +729,8 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-23",
     "score95": "",
     "polish95": "",
-    "cuo": [],
-    "hao": []
+    "cuoci": [],
+    "haoju": []
   },
   {
     "id": "mt5ohvv5q4st",
@@ -715,8 +753,8 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-23",
     "score95": "",
     "polish95": "",
-    "cuo": [],
-    "hao": []
+    "cuoci": [],
+    "haoju": []
   },
   {
     "id": "mt5og2ro7t6e",
@@ -739,8 +777,8 @@ const SEED_ESSAYS = [
     "createdAt": "2026-08-23",
     "score95": "",
     "polish95": "",
-    "cuo": [],
-    "hao": []
+    "cuoci": [],
+    "haoju": []
   }
 ];
 
@@ -913,6 +951,7 @@ function switchSub(s,k){
   scope.querySelectorAll('.sub-tab').forEach(t=>t.classList.toggle('active',t.dataset.sk===k));
   scope.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
   var t=$('sp-'+s+'-'+k); if(t) t.classList.add('active');
+  renderCuoci();renderHaoju();updateCuociHaojuCounts();
 }
 
 /* ===== 试卷 ===== */
@@ -1106,6 +1145,14 @@ function renderEssays(){
               <div class="subfield"><label>书写</label><textarea id="d_shuxie_${e.id}">${esc(String(d.shuxie||''))}</textarea></div>
               <div class="subfield"><label>亮点</label><textarea id="d_liangdian_${e.id}">${esc(String(d.liangdian||''))}</textarea></div>
             </div></div>
+            <div class="detail-section"><div class="detail-label">错字错词（自动进入「错字错词本」）</div>
+              <div id="cuoci_box_${e.id}">${cuociEditRows(e)}</div>
+              <button class="btn ghost sm" style="margin-top:8px" onclick="addCuociRow('${e.id}')">＋ 添加错字错词</button>
+            </div>
+            <div class="detail-section"><div class="detail-label">好词好句（自动进入「好词好句本」）</div>
+              <div id="haoju_box_${e.id}">${haojuEditRows(e)}</div>
+              <button class="btn ghost sm" style="margin-top:8px" onclick="addHaojuRow('${e.id}')">＋ 添加好词好句</button>
+            </div>
             <div class="detail-section"><div class="detail-label">润色定稿</div><textarea id="pol_${e.id}" class="polish-area">${esc(String(e.polish||''))}</textarea></div>
             <div class="detail-section"><div class="subgrid"><div class="subfield"><label>得分</label><input id="es_sc_${e.id}" value="${esc(String(e.score||''))}"></div>
             <div class="subfield"><label>状态</label><select id="es_st_${e.id}"><option ${e.status==='待批改'?'selected':''}>待批改</option><option ${e.status==='已批改'?'selected':''}>已批改</option></select></div>
@@ -1130,7 +1177,32 @@ function toggleEssayDetail(id){
   if(r.hasAttribute('hidden')){r.removeAttribute('hidden');r.style.display='';}
   else{r.setAttribute('hidden','');r.style.display='none';}
 }
-function saveEssay(id){const e=state.essays.find(x=>x.id===id);if(!e)return;e.dims={liyi:$('d_liyi_'+id).value,jiegou:$('d_jiegou_'+id).value,yuyan:$('d_yuyan_'+id).value,sucai:$('d_sucai_'+id).value,shuxie:$('d_shuxie_'+id).value,liangdian:$('d_liangdian_'+id).value};e.polish=$('pol_'+id).value;e.score=$('es_sc_'+id).value;e.status=$('es_st_'+id).value;e.tdocUrl=($('es_url_'+id).value||'').trim();save(K.essays,state.essays);renderEssays();renderOverview();renderToday();toast('已保存批改');}
+function saveEssay(id){
+  const e=state.essays.find(x=>x.id===id); if(!e)return;
+  e.dims={liyi:$('d_liyi_'+id).value,jiegou:$('d_jiegou_'+id).value,yuyan:$('d_yuyan_'+id).value,sucai:$('d_sucai_'+id).value,shuxie:$('d_shuxie_'+id).value,liangdian:$('d_liangdian_'+id).value};
+  e.polish=$('pol_'+id).value;e.score=$('es_sc_'+id).value;e.status=$('es_st_'+id).value;e.tdocUrl=($('es_url_'+id).value||'').trim();
+  const cb=$('cuoci_box_'+id);
+  e.cuoci = cb ? Array.from(cb.querySelectorAll('.cuo-row')).map(function(r){
+    return {
+      wrong: ((r.querySelector('[data-f="wrong"]')||{value:''}).value||'').trim(),
+      correct: ((r.querySelector('[data-f="correct"]')||{value:''}).value||'').trim(),
+      type: ((r.querySelector('[data-f="type"]')||{value:''}).value||'').trim(),
+      note: ((r.querySelector('[data-f="note"]')||{value:''}).value||'').trim(),
+      src: ((r.querySelector('[data-f="src"]')||{value:''}).value||'').trim()
+    };
+  }).filter(function(x){return x.wrong||x.correct||x.note;}) : [];
+  const hb=$('haoju_box_'+id);
+  e.haoju = hb ? Array.from(hb.querySelectorAll('.hao-row')).map(function(r){
+    return {
+      word: ((r.querySelector('[data-f="word"]')||{value:''}).value||'').trim(),
+      why: ((r.querySelector('[data-f="why"]')||{value:''}).value||'').trim(),
+      usage: ((r.querySelector('[data-f="usage"]')||{value:''}).value||'').trim(),
+      src: ((r.querySelector('[data-f="src"]')||{value:''}).value||'').trim()
+    };
+  }).filter(function(x){return x.word||x.why;}) : [];
+  save(K.essays,state.essays);renderEssays();renderCuoci();renderHaoju();updateCuociHaojuCounts();renderOverview();renderToday();
+  toast('已保存批改');
+}
 function parseEssayResult(id){
   const e=state.essays.find(x=>x.id===id);if(!e)return;
   let raw=($('paste_'+id).value||'').trim();
@@ -1156,6 +1228,109 @@ function parseEssayResult(id){
   if(map.tdocUrl!==undefined)e.tdocUrl=map.tdocUrl.trim();
   save(K.essays,state.essays);renderEssays();renderOverview();renderToday();
   toast(map.liyi!==undefined||map.polish!==undefined?'已回填批改结果':'未识别到回填内容，请检查是否复制了完整回填块');
+}
+
+/* ===== 错字错词本 / 好词好句本 ===== */
+function cuociEditRows(e){
+  const list=(e.cuoci||e.cuo||[]);
+  if(!list.length) return '<div class="mini-empty">还没有记录，点下方按钮添加，或等 AI 批改后粘贴回流。</div>';
+  return list.map(function(c){
+    return `<div class="cuo-row">
+      <div class="mini-grid">
+        <input data-f="wrong" placeholder="错字/错词/句子" value="${esc(String(c.wrong||c.text||''))}">
+        <input data-f="correct" placeholder="正确写法" value="${esc(String(c.correct||''))}">
+        <input data-f="type" placeholder="类型(如 的地得)" value="${esc(String(c.type||''))}">
+        <input data-f="note" placeholder="错误问题/说明" value="${esc(String(c.note||''))}">
+      </div>
+      <input data-f="src" placeholder="原句(可空)" value="${esc(String(c.src||''))}">
+      <div class="mini-acts"><button class="btn danger sm" onclick="this.closest('.cuo-row').remove()">删除</button></div>
+    </div>`;
+  }).join('');
+}
+function haojuEditRows(e){
+  const list=(e.haoju||e.hao||[]);
+  if(!list.length) return '<div class="mini-empty">还没有记录，点下方按钮添加，或等 AI 批改后粘贴回流。</div>';
+  return list.map(function(c){
+    return `<div class="hao-row">
+      <div class="mini-grid">
+        <input data-f="word" placeholder="好词/好句" value="${esc(String(c.word||c.text||''))}">
+        <input data-f="why" placeholder="写得好原因" value="${esc(String(c.why||''))}">
+      </div>
+      <input data-f="usage" placeholder="用法/语境(可空)" value="${esc(String(c.usage||''))}">
+      <input data-f="src" placeholder="原句(可空)" value="${esc(String(c.src||''))}">
+      <div class="mini-acts"><button class="btn danger sm" onclick="this.closest('.hao-row').remove()">删除</button></div>
+    </div>`;
+  }).join('');
+}
+function addCuociRow(id){
+  const box=$('cuoci_box_'+id); if(!box)return;
+  if(box.querySelector('.mini-empty')) box.innerHTML='';
+  box.insertAdjacentHTML('beforeend','<div class="cuo-row"><div class="mini-grid"><input data-f="wrong" placeholder="错字/错词/句子"><input data-f="correct" placeholder="正确写法"><input data-f="type" placeholder="类型(如 的地得)"><input data-f="note" placeholder="错误问题/说明"></div><input data-f="src" placeholder="原句(可空)"><div class="mini-acts"><button class="btn danger sm" onclick="this.closest(\'.cuo-row\').remove()">删除</button></div></div>');
+}
+function addHaojuRow(id){
+  const box=$('haoju_box_'+id); if(!box)return;
+  if(box.querySelector('.mini-empty')) box.innerHTML='';
+  box.insertAdjacentHTML('beforeend','<div class="hao-row"><div class="mini-grid"><input data-f="word" placeholder="好词/好句"><input data-f="why" placeholder="写得好原因"></div><input data-f="usage" placeholder="用法/语境(可空)"><input data-f="src" placeholder="原句(可空)"><div class="mini-acts"><button class="btn danger sm" onclick="this.closest(\'.hao-row\').remove()">删除</button></div></div>');
+}
+function renderCuoci(){
+  const box=$('cuociList'); if(!box)return;
+  const rows=[];
+  state.essays.forEach(function(e){
+    (e.cuoci||e.cuo||[]).forEach(function(c){ if(c) rows.push({e:e,c:c}); });
+  });
+  const cc=$('cuociCount'); if(cc) cc.textContent=rows.length;
+  if(!rows.length){ box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:24px 0;text-align:center">暂无错字错词。展开某篇作文的「错字错词」区块添加，或等 AI 批改后粘贴回流。</div>'; return; }
+  box.innerHTML='<div class="essay-table-wrap"><table class="essay-table"><thead><tr>'
+    +'<th style="width:32%">字 / 词语 / 句子</th>'
+    +'<th>正确写法【错误问题】</th>'
+    +'<th style="width:160px;text-align:center">来源</th>'
+    +'</tr></thead><tbody>'
+    +rows.map(function(o){
+      const e=o.e,c=o.c;
+      const link=e.tdocUrl?'<a href="'+esc(e.tdocUrl)+'" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>':'<span class="cell-dash">—</span>';
+      const typeBadge=c.type?'<span class="cuo-tag">'+esc(String(c.type))+'</span> ':'';
+      const src=c.src?'<div class="cell-src">原句：'+esc(String(c.src))+'</div>':'';
+      const note=c.note?'<div class="cell-note">⚠ '+esc(String(c.note))+'</div>':'';
+      const wrong=esc(String(c.wrong||c.text||'—'));
+      const correct=esc(String(c.correct||'—'));
+      return '<tr><td style="vertical-align:top"><div class="cuo-wrong">'+wrong+'</div>'+typeBadge+src+'</td>'
+        +'<td style="vertical-align:top"><div class="cuo-correct">'+correct+'</div>'+note+'</td>'
+        +'<td style="text-align:center;vertical-align:top">'+link+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>';
+}
+function renderHaoju(){
+  const box=$('haojuList'); if(!box)return;
+  const rows=[];
+  state.essays.forEach(function(e){
+    (e.haoju||e.hao||[]).forEach(function(c){ if(c) rows.push({e:e,c:c}); });
+  });
+  const hc=$('haojuCount'); if(hc) hc.textContent=rows.length;
+  if(!rows.length){ box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:24px 0;text-align:center">暂无好词好句。展开某篇作文的「好词好句」区块添加，或等 AI 批改后粘贴回流。</div>'; return; }
+  box.innerHTML='<div class="essay-table-wrap"><table class="essay-table"><thead><tr>'
+    +'<th style="width:32%">字 / 词语 / 句子</th>'
+    +'<th>写得好原因</th>'
+    +'<th style="width:160px;text-align:center">来源</th>'
+    +'</tr></thead><tbody>'
+    +rows.map(function(o){
+      const e=o.e,c=o.c;
+      const link=e.tdocUrl?'<a href="'+esc(e.tdocUrl)+'" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>':'<span class="cell-dash">—</span>';
+      const usage=c.usage?'<div class="cell-src">用法：'+esc(String(c.usage))+'</div>':'';
+      const src=c.src?'<div class="cell-note">原句：'+esc(String(c.src))+'</div>':'';
+      const word=esc(String(c.word||c.text||'—'));
+      const why=esc(String(c.why||'—'));
+      return '<tr><td style="vertical-align:top"><div class="cuo-wrong">'+word+'</div>'+usage+src+'</td>'
+        +'<td style="vertical-align:top">'+why+'</td>'
+        +'<td style="text-align:center;vertical-align:top">'+link+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>';
+}
+function updateCuociHaojuCounts(){
+  const cc=state.essays.reduce(function(n,e){return n+((e.cuoci||e.cuo||[]).length);},0);
+  const hc=state.essays.reduce(function(n,e){return n+((e.haoju||e.hao||[]).length);},0);
+  const a=$('tabCuociCount'), b=$('tabHaojuCount');
+  if(a){ a.textContent=cc; a.style.display=cc?'inline-flex':'none'; }
+  if(b){ b.textContent=hc; b.style.display=hc?'inline-flex':'none'; }
 }
 
 /* ===== 英语单词 ===== */
@@ -1362,6 +1537,7 @@ function clearAll(){
 function reloadRender(){
   renderPapers('数学');renderPapers('语文');renderHw();renderEssays();
   renderWords();renderErr('英语');renderErr('科学');renderExp();
+  renderCuoci();renderHaoju();updateCuociHaojuCounts();
   renderOverview();renderToday();
 }
 function ensureSeedEssays(){
