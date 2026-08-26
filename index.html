@@ -267,7 +267,7 @@
       <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M7 4h7l-6 8h6M14 16h3" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>数学测评</h3>
       <p class="desc">填写出卷需求 → 生成试卷条目；点「复制出卷指令」发给我（WorkBuddy），即可生成真实试卷。</p>
       <div class="row3">
-        <div><label>年级</label><input id="m_grade" placeholder="如 四年级"></div>
+        <div><label>年级</label><input id="m_grade" placeholder="五年级"></div>
         <div><label>单元 / 章节</label><input id="m_chapter" placeholder="如 分数"></div>
         <div><label>难度</label><select id="m_diff"><option>易</option><option selected>中</option><option>难</option></select></div>
       </div>
@@ -945,7 +945,7 @@ function switchSub(s,k){
 function addPaper(subject){
   const chap=$(subject==='数学'?'m_chapter':'c_chapter').value.trim();
   if(!chap){toast('请填写单元/章节');return;}
-  const g=$(subject==='数学'?'m_grade':'c_grade').value.trim() || (state.settings&&state.settings.grade) || '—';
+  const g=$(subject==='数学'?'m_grade':'c_grade').value.trim() || '五年级';
   const diff=$(subject==='数学'?'m_diff':'c_diff').value;
   const type=$(subject==='数学'?'m_type':'c_type').value;
   const count=$(subject==='数学'?'m_count':'c_count').value||'10';
@@ -1106,7 +1106,7 @@ function renderEssays(){
   const box=$('essayList'); if(!box)return;
   if(!state.essays.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:18px 0;text-align:center">暂无作文。点击右上「＋ 收录」开始 ✍️</div>';}
   else{box.innerHTML=`<div class="essay-table-wrap"><table class="essay-table">
-    <thead><tr><th style="width:80px">时间</th><th>标题</th><th style="width:72px;text-align:center">状态</th><th style="width:60px;text-align:center">得分</th><th style="width:150px;text-align:center">作文链接</th></tr></thead>
+    <thead><tr><th style="width:80px">时间</th><th style="width:100px">标题</th><th style="width:150px;text-align:center">状态</th><th style="width:60px;text-align:center">得分</th><th style="width:150px;text-align:center">作文链接</th></tr></thead>
     <tbody>${state.essays.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>{
       const d=e.dims||{};
       const link=e.tdocUrl?`<a href="${esc(e.tdocUrl)}" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>`:'<span class="cell-dash">—</span>';
@@ -1560,27 +1560,12 @@ function init(){
   else { setSync('本地模式'); setTimeout(function(){ if(dbReady()) startCloud(); else setSync('本地模式'); }, 800); }
 }
 function applyGlobalSettings(){
-  var s=state.settings||{grade:'',term:''};
-  var gs=$('gs_grade'), te=$('gs_term');
-  if(gs){ gs.value=s.grade||''; gs.classList.toggle('active',!!s.grade); }
-  if(te){ te.value=s.term||''; te.classList.toggle('active',!!s.term); }
-  // 同步到所有年级输入框（仅当输入框为空时填入，避免覆盖用户已填的）
+  // 年级学期已固定为五年级上，同步到出卷输入框
   ['m_grade','c_grade'].forEach(function(id){
-    var el=$(id); if(el && !el.value && s.grade) el.value=s.grade;
+    var el=$(id); if(el && !el.value) el.value='五年级';
   });
 }
-function onGlobalSetting(key){
-  var gs=$('gs_grade'), te=$('gs_term');
-  if(!state.settings) state.settings={grade:'',term:''};
-  if(key==='grade') state.settings.grade=(gs&&gs.value)||'';
-  if(key==='term') state.settings.term=(te&&te.value)||'';
-  // 实时回填到年级输入框
-  ['m_grade','c_grade'].forEach(function(id){
-    var el=$(id); if(el) el.value=state.settings.grade;
-  });
-  save(K.settings,state.settings);
-  applyGlobalSettings();
-}
+function onGlobalSetting(){}
 init();
 </script>
 </body>
