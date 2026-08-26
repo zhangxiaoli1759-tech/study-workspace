@@ -316,9 +316,9 @@
   <div class="panel active" id="p-chinese">
     <div class="sub-tabs">
       <button class="sub-tab" data-sk="test" onclick="switchSub('chinese','test')">语文测评</button>
-      <button class="sub-tab active" data-sk="essay" onclick="switchSub('chinese','essay')">作文收录</button>
-      <button class="sub-tab" data-sk="cuoci" onclick="switchSub('chinese','cuoci')">错字错词本<span id="tabCuociCount" class="count-badge" style="display:none">0</span></button>
-      <button class="sub-tab" data-sk="haoju" onclick="switchSub('chinese','haoju')">好词好句本<span id="tabHaojuCount" class="count-badge" style="display:none">0</span></button>
+      <button class="sub-tab active" data-sk="essay" onclick="switchSub('chinese','essay')">作文收录<span id="tabEssayCount" class="count-badge">0</span></button>
+      <button class="sub-tab" data-sk="cuoci" onclick="switchSub('chinese','cuoci')">错字错词本<span id="tabCuociCount" class="count-badge">0</span></button>
+      <button class="sub-tab" data-sk="haoju" onclick="switchSub('chinese','haoju')">好词好句本<span id="tabHaojuCount" class="count-badge">0</span></button>
     </div>
 
     <div class="sub-panel" id="sp-chinese-test">
@@ -951,7 +951,7 @@ function switchSub(s,k){
   scope.querySelectorAll('.sub-tab').forEach(t=>t.classList.toggle('active',t.dataset.sk===k));
   scope.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
   var t=$('sp-'+s+'-'+k); if(t) t.classList.add('active');
-  renderCuoci();renderHaoju();updateCuociHaojuCounts();
+  renderCuoci();renderHaoju();updateChineseTabCounts();
 }
 
 /* ===== 试卷 ===== */
@@ -1119,7 +1119,7 @@ function renderEssays(){
   const box=$('essayList'); if(!box)return;
   if(!state.essays.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:18px 0;text-align:center">暂无作文。点击右上「＋ 收录」开始 ✍️</div>';}
   else{box.innerHTML=`<div class="essay-table-wrap"><table class="essay-table">
-    <thead><tr><th style="width:96px">时间</th><th>标题</th><th style="width:84px;text-align:center">状态</th><th style="width:66px;text-align:center">得分</th><th style="width:150px;text-align:center">作文链接</th></tr></thead>
+    <thead><tr><th style="width:80px">时间</th><th>标题</th><th style="width:72px;text-align:center">状态</th><th style="width:60px;text-align:center">得分</th><th style="width:150px;text-align:center">作文链接</th></tr></thead>
     <tbody>${state.essays.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>{
       const d=e.dims||{};
       const link=e.tdocUrl?`<a href="${esc(e.tdocUrl)}" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>`:'<span class="cell-dash">—</span>';
@@ -1200,7 +1200,7 @@ function saveEssay(id){
       src: ((r.querySelector('[data-f="src"]')||{value:''}).value||'').trim()
     };
   }).filter(function(x){return x.word||x.why;}) : [];
-  save(K.essays,state.essays);renderEssays();renderCuoci();renderHaoju();updateCuociHaojuCounts();renderOverview();renderToday();
+  save(K.essays,state.essays);renderEssays();renderCuoci();renderHaoju();updateChineseTabCounts();renderOverview();renderToday();
   toast('已保存批改');
 }
 function parseEssayResult(id){
@@ -1325,12 +1325,14 @@ function renderHaoju(){
     }).join('')
     +'</tbody></table></div>';
 }
-function updateCuociHaojuCounts(){
+function updateChineseTabCounts(){
+  const ec=state.essays.length;
   const cc=state.essays.reduce(function(n,e){return n+((e.cuoci||e.cuo||[]).length);},0);
   const hc=state.essays.reduce(function(n,e){return n+((e.haoju||e.hao||[]).length);},0);
-  const a=$('tabCuociCount'), b=$('tabHaojuCount');
-  if(a){ a.textContent=cc; a.style.display=cc?'inline-flex':'none'; }
-  if(b){ b.textContent=hc; b.style.display=hc?'inline-flex':'none'; }
+  const a=$('tabEssayCount'),b=$('tabCuociCount'),c=$('tabHaojuCount');
+  if(a) a.textContent=ec;
+  if(b) b.textContent=cc;
+  if(c) c.textContent=hc;
 }
 
 /* ===== 英语单词 ===== */
@@ -1537,7 +1539,7 @@ function clearAll(){
 function reloadRender(){
   renderPapers('数学');renderPapers('语文');renderHw();renderEssays();
   renderWords();renderErr('英语');renderErr('科学');renderExp();
-  renderCuoci();renderHaoju();updateCuociHaojuCounts();
+  renderCuoci();renderHaoju();updateChineseTabCounts();
   renderOverview();renderToday();
 }
 function ensureSeedEssays(){
