@@ -328,16 +328,31 @@
     <div class="card">
       <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>作文收录与批改</h3>
       <p class="desc">可上传作文图片自动收录，按「立意/结构/语言/素材/书写/亮点」六维记录批改，一键复制指令让我（资深语文老师）识别图片并精批。</p>
-      <div class="row2">
-        <div><label>作文标题</label><input id="es_title" placeholder="如 我的暑假"></div>
-        <div><label>作文时间</label><input id="es_date" type="date"></div>
-      </div>
-      <div><label>正文（可粘贴，或上传图片由 AI 识别）</label><textarea id="es_content" placeholder="粘贴作文正文，或上传下方图片让 AI 识别"></textarea></div>
-      <div><label>上传作文图片（最多 9 张，自动压缩到 800px）</label>
-        <input id="es_imgs" type="file" accept="image/*" multiple onchange="onEssayImages(event)" style="padding:8px;background:#fff"></div>
-      <div class="thumbs" id="es_thumbs"></div>
-      <button class="btn block" style="margin-top:12px" onclick="addEssay()">＋ 收录并发起 AI 批改（含图片）</button>
+
+      <h4 style="margin:14px 0 8px;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M4 6h16M4 12h16M4 18h10" stroke="#ef5da8" stroke-width="2" stroke-linecap="round"/></svg>
+        已收录作文（<span id="essayCount">0</span>）
+        <span style="font-size:11.5px;color:var(--sub);font-weight:400;margin-left:4px">· 数据离线保存在浏览器，云端同步中</span>
+      </h4>
       <div class="list" id="essayList"></div>
+
+      <details style="margin-top:18px;border-top:1px dashed var(--line);padding-top:12px">
+        <summary style="cursor:pointer;font-size:13.5px;color:var(--chinese);font-weight:600;list-style:none;display:flex;align-items:center;gap:6px">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="#ef5da8" stroke-width="2" stroke-linecap="round"/></svg>
+          ＋ 收录新作文（点击展开录入区）
+        </summary>
+        <div style="padding-top:12px">
+          <div class="row2">
+            <div><label>作文标题</label><input id="es_title" placeholder="如 我的暑假"></div>
+            <div><label>作文时间</label><input id="es_date" type="date"></div>
+          </div>
+          <div><label>正文（可粘贴，或上传图片由 AI 识别）</label><textarea id="es_content" placeholder="粘贴作文正文，或上传下方图片让 AI 识别"></textarea></div>
+          <div><label>上传作文图片（最多 9 张，自动压缩到 800px）</label>
+            <input id="es_imgs" type="file" accept="image/*" multiple onchange="onEssayImages(event)" style="padding:8px;background:#fff"></div>
+          <div class="thumbs" id="es_thumbs"></div>
+          <button class="btn block" style="margin-top:12px" onclick="addEssay()">＋ 收录并发起 AI 批改（含图片）</button>
+        </div>
+      </details>
     </div>
     </div>
   </div>
@@ -1035,6 +1050,7 @@ function renderEssays(){
         </td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
+  const ec=$('essayCount'); if(ec) ec.textContent=state.essays.length;
 }
 function toggleEssayDetail(id){
   const r=$('edetail_'+id); if(!r)return;
