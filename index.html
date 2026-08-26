@@ -1080,7 +1080,7 @@ function renderEssays(){
   const box=$('essayList'); if(!box)return;
   if(!state.essays.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:18px 0;text-align:center">暂无作文。点击右上「＋ 收录」开始 ✍️</div>';}
   else{box.innerHTML=`<div class="essay-table-wrap"><table class="essay-table">
-    <thead><tr><th style="width:96px">时间</th><th>标题</th><th style="width:80px">状态</th><th style="width:62px">得分</th><th style="width:140px">作文链接</th></tr></thead>
+    <thead><tr><th style="width:96px">时间</th><th>标题</th><th style="width:84px;text-align:center">状态</th><th style="width:66px;text-align:center">得分</th><th style="width:150px;text-align:center">作文链接</th></tr></thead>
     <tbody>${state.essays.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>{
       const d=e.dims||{};
       const link=e.tdocUrl?`<a href="${esc(e.tdocUrl)}" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>`:'<span class="cell-dash">—</span>';
@@ -1089,9 +1089,9 @@ function renderEssays(){
       return `<tr class="essay-row" data-id="${e.id}">
         <td class="cell-time">${esc(e.date||'—')}</td>
         <td class="cell-title"><span class="essay-title-link" onclick="toggleEssayDetail('${e.id}')" title="点击展开/收起批改详情">${esc(e.title)}</span></td>
-        <td class="cell-status"><span class="badge ${(String(e.status)==='待批改')?'b-wait':'b-done'} sm-badge">${st}</span></td>
-        <td class="cell-score">${score!==''?`<span class="score-chip">${esc(score)}分</span>`:'<span class="cell-dash">—</span>'}</td>
-        <td class="cell-link">${link}</td>
+        <td class="cell-status" style="text-align:center"><span class="badge ${(String(e.status)==='待批改')?'b-wait':'b-done'} sm-badge">${st}</span></td>
+        <td class="cell-score" style="text-align:center">${score!==''?`<span class="score-chip">${esc(score)}分</span>`:'<span class="cell-dash">—</span>'}</td>
+        <td class="cell-link" style="text-align:center">${link}</td>
       </tr>
       <tr class="essay-detail" id="edetail_${e.id}" hidden>
         <td colspan="5">
