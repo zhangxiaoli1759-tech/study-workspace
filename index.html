@@ -115,6 +115,9 @@
   .card h3{margin:0 0 4px; font-size:15px; display:flex; align-items:center; gap:7px;}
   .card .desc{margin:0 0 12px; font-size:12.5px; color:var(--sub);}
   .card h3 .ic{width:20px; height:20px; flex:0 0 auto;}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+  .card-head > div:first-child{flex:1;min-width:200px}
+  .count-badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;margin-left:8px;font-size:12px;font-weight:600;color:#ef5da8;background:#fff0f7;border-radius:11px;vertical-align:middle;}
 
   label{display:block; font-size:12.5px; color:var(--sub); margin:10px 0 5px;}
   input,select,textarea{
@@ -326,33 +329,17 @@
 
     <div class="sub-panel active" id="sp-chinese-essay">
     <div class="card">
-      <h3><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>作文收录与批改</h3>
-      <p class="desc">可上传作文图片自动收录，按「立意/结构/语言/素材/书写/亮点」六维记录批改，一键复制指令让我（资深语文老师）识别图片并精批。</p>
-
-      <h4 style="margin:14px 0 8px;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:6px">
-        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M4 6h16M4 12h16M4 18h10" stroke="#ef5da8" stroke-width="2" stroke-linecap="round"/></svg>
-        已收录作文（<span id="essayCount">0</span>）
-        <span style="font-size:11.5px;color:var(--sub);font-weight:400;margin-left:4px">· 数据离线保存在浏览器，云端同步中</span>
-      </h4>
-      <div class="list" id="essayList"></div>
-
-      <details style="margin-top:18px;border-top:1px dashed var(--line);padding-top:12px">
-        <summary style="cursor:pointer;font-size:13.5px;color:var(--chinese);font-weight:600;list-style:none;display:flex;align-items:center;gap:6px">
-          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="#ef5da8" stroke-width="2" stroke-linecap="round"/></svg>
-          ＋ 收录新作文（点击展开录入区）
-        </summary>
-        <div style="padding-top:12px">
-          <div class="row2">
-            <div><label>作文标题</label><input id="es_title" placeholder="如 我的暑假"></div>
-            <div><label>作文时间</label><input id="es_date" type="date"></div>
-          </div>
-          <div><label>正文（可粘贴，或上传图片由 AI 识别）</label><textarea id="es_content" placeholder="粘贴作文正文，或上传下方图片让 AI 识别"></textarea></div>
-          <div><label>上传作文图片（最多 9 张，自动压缩到 800px）</label>
-            <input id="es_imgs" type="file" accept="image/*" multiple onchange="onEssayImages(event)" style="padding:8px;background:#fff"></div>
-          <div class="thumbs" id="es_thumbs"></div>
-          <button class="btn block" style="margin-top:12px" onclick="addEssay()">＋ 收录并发起 AI 批改（含图片）</button>
+      <div class="card-head">
+        <div>
+          <h3 style="margin:0"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>作文收录与批改 <span id="essayCount" class="count-badge">0</span></h3>
+          <p class="desc" style="margin:4px 0 0">按时间倒序展示所有收录的作文；点标题展开批改详情；点右上「＋ 收录」弹窗新增。</p>
         </div>
-      </details>
+        <button class="btn primary" onclick="openAddEssayModal()" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          ＋ 收录
+        </button>
+      </div>
+      <div class="list" id="essayList"></div>
     </div>
     </div>
   </div>
@@ -450,6 +437,44 @@
     <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end;">
       <button class="btn ghost sm" onclick="closeRecoverModal()">取消</button>
       <button class="btn sm" onclick="doRecoverFromText()">🚀 立即恢复</button>
+    </div>
+  </div>
+</div>
+
+<!-- 收录作文弹窗（点击右上角「＋ 收录」触发） -->
+<div id="addEssayModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
+  <div style="background:#fff;max-width:720px;width:calc(100% - 32px);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column;max-height:88vh">
+    <div style="padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#fff5fa 0%,#fff 80%);">
+      <h3 style="margin:0;font-size:17px;color:#1f2937;display:flex;align-items:center;gap:8px">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>
+        收录新作文
+      </h3>
+      <button onclick="closeAddEssayModal()" aria-label="关闭" style="background:transparent;border:none;font-size:22px;line-height:1;color:#6b7280;cursor:pointer;padding:4px 8px;border-radius:8px">×</button>
+    </div>
+    <div style="padding:18px 22px;overflow-y:auto;flex:1">
+      <div class="row2">
+        <div><label>作文时间</label><input id="esm_date" type="date"></div>
+        <div><label>作文标题 <span style="color:#ef4444">*</span></label><input id="esm_title" placeholder="如 我的暑假"></div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          作文内容
+          <span style="font-size:11px;color:var(--sub);background:#fff5fa;padding:2px 6px;border-radius:4px">富文本粘贴 · 自动保留换行 / 段落 / 缩进</span>
+        </label>
+        <textarea id="esm_content" placeholder="可直接粘贴 Word / PDF / 网页里的作文，自动保留段落和换行……" style="width:100%;min-height:180px;max-height:300px;resize:vertical;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:13.5px;line-height:1.7;font-family:ui-sans-serif,system-ui,-apple-system;box-sizing:border-box"></textarea>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          上传文件
+          <span style="font-size:11px;color:var(--sub)">支持多张图片（jpg/png/webp），自动压缩到 800px</span>
+        </label>
+        <input id="esm_imgs" type="file" accept="image/*" multiple onchange="onModalEssayImages(event)" style="padding:8px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;width:100%;box-sizing:border-box;cursor:pointer">
+        <div class="thumbs" id="esm_thumbs" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;background:#f8fafc">
+      <button class="btn ghost sm" onclick="closeAddEssayModal()">取消</button>
+      <button class="btn primary sm" onclick="submitEssay()">＋ 收录并发起 AI 批改（含图片）</button>
     </div>
   </div>
 </div>
@@ -961,26 +986,73 @@ function renderHw(){
 function saveHw(id){const h=state.hw.find(x=>x.id===id);if(!h)return;h.cor=$('cor_'+id).value;h.score=$('sc_'+id).value;h.status=$('st_'+id).value;save(K.hw,state.hw);renderHw();renderOverview();renderToday();toast('已保存批改');}
 
 /* ===== 语文作文 ===== */
-let pendingEssayImgs=[]; let lbImgs=[];
-function onEssayImages(ev){
-  const files=Array.from(ev.target.files||[]).slice(0,9);
-  compressImages(files,out=>{pendingEssayImgs=out;renderEssayThumbs();});
+let pendingModalImgs=[]; let lbImgs=[];
+/* ===== 收录作文弹窗 ===== */
+function openAddEssayModal(){
+  var m=$('addEssayModal'); if(!m)return;
+  // 默认日期 = 今天
+  var d=$('esm_date'); if(d && !d.value) d.value=todayStr();
+  $('esm_title').value='';
+  $('esm_content').value='';
+  pendingModalImgs=[];
+  renderModalThumbs();
+  m.style.display='flex';
+  setTimeout(function(){try{$('esm_title').focus();}catch(e){}},60);
 }
-function renderEssayThumbs(){
-  const box=$('es_thumbs'); if(!box)return;
-  lbImgs=[]; pendingEssayImgs.forEach(s=>lbImgs.push(s));
-  box.innerHTML=pendingEssayImgs.map((s,idx)=>`<img class="thumb" src="${s}" onclick="openLightbox(${idx})">`).join('');
+function closeAddEssayModal(){
+  var m=$('addEssayModal'); if(m) m.style.display='none';
 }
-function addEssay(){
-  const title=$('es_title').value.trim(); if(!title){toast('请填写作文标题');return;}
-  const date=$('es_date').value||todayStr();
-  const id=uid();
-  state.essays.unshift({id,title,content:$('es_content').value,date,img:pendingEssayImgs.slice(),tdocUrl:'',dims:{liyi:'',jiegou:'',yuyan:'',sucai:'',shuxie:'',liangdian:''},polish:'',score:'',status:'待批改',createdAt:todayStr()});
-  save(K.essays,state.essays);renderEssays();renderOverview();renderToday();
-  $('es_title').value='';$('es_content').value='';$('es_date').value=todayStr();pendingEssayImgs=[];renderEssayThumbs();
+function onModalEssayImages(ev){
+  var files=Array.from(ev.target.files||[]).slice(0,9);
+  if(!files.length) return;
+  compressImages(files, function(out){
+    pendingModalImgs = pendingModalImgs.concat(out);
+    renderModalThumbs();
+  });
+}
+function renderModalThumbs(){
+  var box=$('esm_thumbs'); if(!box)return;
+  if(!pendingModalImgs.length){box.innerHTML='';return;}
+  box.innerHTML = pendingModalImgs.map(function(s,i){
+    return '<div style="position:relative;display:inline-block;margin:0 6px 6px 0"><img class="thumb" src="'+s+'" onclick="openLightbox('+(lbImgs.push(s)-1)+')"><button onclick="removeModalImg('+i+')" title="移除" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;border:none;cursor:pointer;font-size:12px;line-height:1">×</button></div>';
+  }).join('');
+}
+function removeModalImg(i){
+  pendingModalImgs.splice(i,1);
+  renderModalThumbs();
+}
+function submitEssay(){
+  var title=$('esm_title').value.trim();
+  if(!title){ toast('请填写作文标题');try{$('esm_title').focus();}catch(e){} return; }
+  var date=$('esm_date').value || todayStr();
+  var content=$('esm_content').value || '';
+  if(!content && !pendingModalImgs.length){ toast('请粘贴作文内容或上传图片'); return; }
+  var id=uid();
+  state.essays.unshift({
+    id:id, title:title, content:content, date:date,
+    img: pendingModalImgs.slice(),
+    tdocUrl:'',
+    dims:{liyi:'',jiegou:'',yuyan:'',sucai:'',shuxie:'',liangdian:''},
+    polish:'', score:'', status:'待批改',
+    createdAt: todayStr()
+  });
+  save(K.essays, state.essays);
+  renderEssays(); renderOverview(); renderToday();
+  closeAddEssayModal();
   copyText(essayPrompt(id));
-  toast('✅ 已收录，批改指令已复制。请到 WorkBuddy 对话框粘贴指令并把同一张作文图片发我，我会自动批改 + 收录腾讯文档，把含链接的回填块发回——粘到下方一键回填即可。');
+  toast('✅ 已收录，批改指令已复制。请到 WorkBuddy 对话框粘贴指令'+(pendingModalImgs.length?'并把同一张作文图片发我':'')+'，我会自动批改 + 收录腾讯文档，把含链接的回填块发回——粘到展开详情即可一键回填。');
 }
+/* ESC 关闭弹窗 */
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    var am=$('addEssayModal'); if(am && am.style.display==='flex') closeAddEssayModal();
+    var rm=$('recoverModal'); if(rm && rm.style.display==='flex') closeRecoverModal();
+  }
+});
+/* 点击弹窗背景关闭 */
+addEventListener('click', function(e){
+  if(e.target && e.target.id==='addEssayModal') closeAddEssayModal();
+}, true);
 function essayPrompt(id){
   const e=state.essays.find(x=>x.id===id); if(!e)return '';
   const hasImg=(e.img&&e.img.length);
@@ -1006,35 +1078,36 @@ function closeLightbox(){$('lightbox').classList.remove('show');}
 function renderEssays(){
   lbImgs=[];
   const box=$('essayList'); if(!box)return;
-  if(!state.essays.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:12px 0;text-align:center">暂无作文，点上方「＋收录并发起 AI 批改」开始 ✍️</div>';return;}
-  box.innerHTML=`<div class="essay-table-wrap"><table class="essay-table">
-    <thead><tr><th style="width:92px">时间</th><th>标题</th><th style="width:62px">得分</th><th style="width:110px">批改链接</th><th style="width:54px">原图</th></tr></thead>
+  if(!state.essays.length){box.innerHTML='<div class="empty" style="color:#6b7785;font-size:13px;padding:18px 0;text-align:center">暂无作文。点击右上「＋ 收录」开始 ✍️</div>';}
+  else{box.innerHTML=`<div class="essay-table-wrap"><table class="essay-table">
+    <thead><tr><th style="width:96px">时间</th><th>标题</th><th style="width:80px">状态</th><th style="width:62px">得分</th><th style="width:140px">作文链接</th></tr></thead>
     <tbody>${state.essays.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>{
       const d=e.dims||{};
-      const thumb=(e.img&&e.img.length)?(()=>{const idx=lbImgs.length;lbImgs.push(e.img[0]);return `<img class="thumb-sm" src="${e.img[0]}" onclick="openLightbox(${idx})" title="点击放大原图">`;})():'<span class="cell-dash">—</span>';
       const link=e.tdocUrl?`<a href="${esc(e.tdocUrl)}" target="_blank" rel="noopener" class="tdoc-badge">📄 腾讯文档</a>`:'<span class="cell-dash">—</span>';
+      const st=esc(String(e.status||'—'));
+      const score=String(e.score||'');
       return `<tr class="essay-row" data-id="${e.id}">
         <td class="cell-time">${esc(e.date||'—')}</td>
-        <td class="cell-title"><span class="essay-title-link" onclick="toggleEssayDetail('${e.id}')" title="点击展开/收起批改详情">${esc(e.title)}</span><span class="badge ${e.status==='待批改'?'b-wait':'b-done'} sm-badge">${e.status}</span></td>
-        <td class="cell-score">${e.score!==''?`<span class="score-chip">${esc(e.score)}分</span>`:'<span class="cell-dash">—</span>'}</td>
+        <td class="cell-title"><span class="essay-title-link" onclick="toggleEssayDetail('${e.id}')" title="点击展开/收起批改详情">${esc(e.title)}</span></td>
+        <td class="cell-status"><span class="badge ${(String(e.status)==='待批改')?'b-wait':'b-done'} sm-badge">${st}</span></td>
+        <td class="cell-score">${score!==''?`<span class="score-chip">${esc(score)}分</span>`:'<span class="cell-dash">—</span>'}</td>
         <td class="cell-link">${link}</td>
-        <td class="cell-img">${thumb}</td>
       </tr>
       <tr class="essay-detail" id="edetail_${e.id}" hidden>
         <td colspan="5">
           <div class="essay-detail-inner">
-            ${e.content?`<div class="detail-section"><div class="detail-label">作文正文</div><div class="detail-content">${esc(e.content)}</div></div>`:''}
-            ${(e.img&&e.img.length>1)?`<div class="detail-section"><div class="detail-label">全部原图（点击放大）</div><div class="thumbs">${e.img.map((s,i)=>{const idx=lbImgs.length;lbImgs.push(s);return `<img class="thumb" src="${s}" onclick="openLightbox(${idx})">`;}).join('')}</div></div>`:''}
+            ${e.content?`<div class="detail-section"><div class="detail-label">作文正文</div><div class="detail-content" style="white-space:pre-wrap">${esc(e.content)}</div></div>`:''}
+            ${(e.img&&e.img.length)?`<div class="detail-section"><div class="detail-label">原图（${e.img.length} 张，点击放大）</div><div class="thumbs">${e.img.map((s,i)=>{const idx=lbImgs.length;lbImgs.push(s);return `<img class="thumb" src="${s}" onclick="openLightbox(${idx})">`;}).join('')}</div></div>`:''}
             <div class="detail-section"><div class="detail-label">六维批改</div><div class="dim6">
-              <div class="subfield"><label>立意</label><textarea id="d_liyi_${e.id}">${esc(d.liyi)}</textarea></div>
-              <div class="subfield"><label>结构</label><textarea id="d_jiegou_${e.id}">${esc(d.jiegou)}</textarea></div>
-              <div class="subfield"><label>语言</label><textarea id="d_yuyan_${e.id}">${esc(d.yuyan)}</textarea></div>
-              <div class="subfield"><label>素材</label><textarea id="d_sucai_${e.id}">${esc(d.sucai)}</textarea></div>
-              <div class="subfield"><label>书写</label><textarea id="d_shuxie_${e.id}">${esc(d.shuxie)}</textarea></div>
-              <div class="subfield"><label>亮点</label><textarea id="d_liangdian_${e.id}">${esc(d.liangdian)}</textarea></div>
+              <div class="subfield"><label>立意</label><textarea id="d_liyi_${e.id}">${esc(String(d.liyi||''))}</textarea></div>
+              <div class="subfield"><label>结构</label><textarea id="d_jiegou_${e.id}">${esc(String(d.jiegou||''))}</textarea></div>
+              <div class="subfield"><label>语言</label><textarea id="d_yuyan_${e.id}">${esc(String(d.yuyan||''))}</textarea></div>
+              <div class="subfield"><label>素材</label><textarea id="d_sucai_${e.id}">${esc(String(d.sucai||''))}</textarea></div>
+              <div class="subfield"><label>书写</label><textarea id="d_shuxie_${e.id}">${esc(String(d.shuxie||''))}</textarea></div>
+              <div class="subfield"><label>亮点</label><textarea id="d_liangdian_${e.id}">${esc(String(d.liangdian||''))}</textarea></div>
             </div></div>
-            <div class="detail-section"><div class="detail-label">润色定稿</div><textarea id="pol_${e.id}" class="polish-area">${esc(e.polish)}</textarea></div>
-            <div class="detail-section"><div class="subgrid"><div class="subfield"><label>得分</label><input id="es_sc_${e.id}" value="${esc(e.score)}"></div>
+            <div class="detail-section"><div class="detail-label">润色定稿</div><textarea id="pol_${e.id}" class="polish-area">${esc(String(e.polish||''))}</textarea></div>
+            <div class="detail-section"><div class="subgrid"><div class="subfield"><label>得分</label><input id="es_sc_${e.id}" value="${esc(String(e.score||''))}"></div>
             <div class="subfield"><label>状态</label><select id="es_st_${e.id}"><option ${e.status==='待批改'?'selected':''}>待批改</option><option ${e.status==='已批改'?'selected':''}>已批改</option></select></div>
             <div class="subfield" style="grid-column:1/-1"><label>腾讯文档链接（批改档案，可手动粘贴或一键回填）</label><input id="es_url_${e.id}" value="${esc(e.tdocUrl||'')}" placeholder="https://docs.qq.com/aio/..."></div></div></div>
             <div class="detail-section" style="border-top:1px dashed #d8dee6;padding-top:10px">
@@ -1049,7 +1122,7 @@ function renderEssays(){
           </div>
         </td>
       </tr>`;
-    }).join('')}</tbody></table></div>`;
+    }).join('')}</tbody></table></div>`;}
   const ec=$('essayCount'); if(ec) ec.textContent=state.essays.length;
 }
 function toggleEssayDetail(id){
@@ -1315,7 +1388,7 @@ function init(){
     state.essays = JSON.parse(JSON.stringify(SEED_ESSAYS));
     cacheSave(K.essays, state.essays);
   }
-  const ed=$('es_date'); if(ed&&!ed.value)ed.value=todayStr();
+  const ed=$('esm_date'); if(ed&&!ed.value)ed.value=todayStr();
   applyGlobalSettings();
   reloadRender();
   if(dbReady()) startCloud();
