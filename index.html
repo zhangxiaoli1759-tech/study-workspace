@@ -1289,7 +1289,16 @@ function ensureSeedEssays(){
 }
 
 function init(){
-  reloadAll();var _seeded=ensureSeedEssays();seedIfNeeded();if(_seeded)cacheSave(K.essays,state.essays);reloadAll();
+  reloadAll();
+  ensureSeedEssays();
+  seedIfNeeded();
+  cacheSave(K.essays, state.essays);
+  reloadAll();
+  // 最终兜底：第二次 reloadAll 后 essays 仍为空（localStorage 写入未生效），直接用 SEED
+  if(!state.essays || !state.essays.length){
+    state.essays = JSON.parse(JSON.stringify(SEED_ESSAYS));
+    cacheSave(K.essays, state.essays);
+  }
   const ed=$('es_date'); if(ed&&!ed.value)ed.value=todayStr();
   applyGlobalSettings();
   reloadRender();
