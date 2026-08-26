@@ -215,11 +215,7 @@
   .global-settings{display:flex; align-items:center; gap:14px; margin-left:auto;}
   .global-settings .gs-item{display:inline-flex; align-items:center; gap:6px;}
   .global-settings .gs-label{font-size:12px; color:var(--sub); font-weight:600; white-space:nowrap;}
-  .global-settings select{
-    font-family:inherit; font-size:12.5px; padding:4px 8px; min-width:90px;
-    border-radius:8px; border:1px solid var(--line); background:#fff; color:var(--ink); font-weight:600;
-  }
-  .global-settings select.active{border-color:var(--math); background:#eff6ff; color:var(--math);}
+  .global-settings .gs-value{font-size:13px;font-weight:600;color:var(--math);background:#eff6ff;border-radius:8px;padding:4px 12px;border:1px solid #bfdbfe;}
 </style>
 </head>
 <body>
@@ -232,18 +228,7 @@
         <p>数学 · 语文 · 英语 · 科学 一站式学习管理</p>
       </div>
       <div class="global-settings">
-        <div class="gs-item"><span class="gs-label">年级</span>
-          <select id="gs_grade" onchange="onGlobalSetting('grade')">
-            <option value="">— 选择 —</option>
-            <option>一年级</option><option>二年级</option><option>三年级</option>
-            <option>四年级</option><option>五年级</option><option>六年级</option>
-          </select>
-        </div>
-        <div class="gs-item"><span class="gs-label">学期</span>
-          <select id="gs_term" onchange="onGlobalSetting('term')">
-            <option value="">—</option><option>上</option><option>下</option>
-          </select>
-        </div>
+        <div class="gs-item"><span class="gs-label">年级学期</span><span class="gs-value">五年级上</span></div>
       </div>
     </div>
     <div class="header-bottom">
@@ -343,7 +328,7 @@
     <div class="card">
       <div class="card-head">
         <div>
-          <h3 style="margin:0"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>作文收录与批改 <span id="essayCount" class="count-badge">0</span></h3>
+          <h3 style="margin:0"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h11l3 3v13H5z" stroke="#ef5da8" stroke-width="2" stroke-linejoin="round"/><path d="M8 11h8M8 15h6" stroke="#ef5da8" stroke-width="1.8" stroke-linecap="round"/></svg>作文收录与批改</h3>
           <p class="desc" style="margin:4px 0 0">按时间倒序展示所有收录的作文；点标题展开批改详情；点右上「＋ 收录」弹窗新增。</p>
         </div>
         <button class="btn primary" onclick="openAddEssayModal()" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap">
@@ -806,7 +791,7 @@ function cloudPull(k){
 function save(k,v){ cacheSave(k,v); cloudPush(k,LABELS[k]||k,v); flashSync(); }
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-let state={papers:[],hw:[],essays:[],words:[],exp:[],err:[],settings:{grade:'',term:''}};
+let state={papers:[],hw:[],essays:[],words:[],exp:[],err:[],settings:{grade:'五年级',term:'上'}};
 
 function seedIfNeeded(){
   if(localStorage.getItem(PREFIX+K.meta))return;
@@ -844,7 +829,9 @@ function reloadAll(){
   state.papers=load(K.papers);state.hw=load(K.hw);state.essays=load(K.essays);
   state.words=load(K.words);state.exp=load(K.exp);state.err=load(K.err);
   var s=load(K.settings);
-  state.settings=(s&&typeof s==='object')?s:{grade:'',term:''};
+  state.settings=(s&&typeof s==='object')?s:{grade:'五年级',term:'上'};
+  // 年级/学期固定为五年级上，忽略云端/本地可能存的旧值
+  state.settings.grade='五年级'; state.settings.term='上';
 }
 
 /* ===== 云端同步 ===== */
